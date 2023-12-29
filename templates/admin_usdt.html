@@ -93,6 +93,11 @@
   table tbody tr td a:hover {
     opacity: 1;
   }
+  .disabled {
+  background-color: grey; /* 灰色背景表示禁用 */
+  pointer-events: none; /* 禁止鼠标事件 */
+  color: white; /* 修改文本颜色以提高对比度 */
+}
 </style>
 {% endblock %}
 
@@ -142,3 +147,33 @@
     </div>
   </div>
 {% endblock %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.confirm-btn').forEach(function(button) {
+      button.addEventListener('click', function(event) {
+        event.preventDefault();  // 阻止按钮的默认行为
+        var btnId = event.target.getAttribute('data-id');
+        var method = event.target.getAttribute('data-method');
+
+        fetch('/check_status?bId=' + btnId)
+          .then(response => response.json())
+          .then(data => {
+            if(data.status === 'processed') {
+              // 如果订单已处理，显示警告
+              alert('此订单已处理，无需重复操作。');
+            } else {
+              // 如果订单未处理，执行更新操作（确保你有一个函数来处理这部分）
+              updateOrderStatus(btnId, method);
+            }
+          });
+      });
+    });
+  });
+
+  function updateOrderStatus(orderId, method) {
+    // 在这里添加你的更新订单状态的逻辑
+    console.log("Updating order", orderId, "with method", method);
+    // 可能会再次发起fetch请求到另一个处理更新的后端路由
+  }
+</script>

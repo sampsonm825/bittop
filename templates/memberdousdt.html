@@ -73,7 +73,6 @@
 
 
 
-
   .close {
     color: #aaa;
     position: absolute;
@@ -383,14 +382,11 @@
           <select id="network" name="network">
             <option value="trc20">TRC20</option>
             <option value="trc20">ERC20</option>
+          </select>
         </div>
         <div class="form-control">
-          <label for="qrcode">扫描充值:</label>
-          <img id="qrcode" src="{{ url_for('static', filename='path/to/your/qrcode.png') }}" alt="QR Code"
-            style="width:100px;height:100px;">
-        </div>
-        <div class="form-control">
-          <input type="text" value="钱包地址" readonly>
+          <label for="address">钱包地址:</label> <!-- 修改for属性 -->
+          <p>TMUw65KFv5rbnfSGMKEufxvHwonLLc9vQW</p> <!-- 直接显示地址 -->
         </div>
         <div class="form-control">
           <label for="tradecode">交易码</label>
