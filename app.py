@@ -2407,7 +2407,7 @@ def register():
             box_size=10,
             border=4,
         )
-        qr.add_data(f"http://127.0.0.1:5000/register?invite={account}")
+        qr.add_data(f"http://bittop.store/register?invite={account}")
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
 
