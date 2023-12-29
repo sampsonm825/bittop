@@ -61,15 +61,9 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-@app.route('/')
+@app.route('/', methods=['GET', 'PSOT'])
 def index():
-    data = {'time': datetime.now()}
-    return Response(json_util.dumps(data), mimetype='application/json')
-
-@app.route('/get_datetime')
-def get_datetime():
-    return Response(json.dumps({'time': datetime.now()}), mimetype='application/json')
-
+    return render_template('index.html')
 
 @app.route('/admin_manifestOrder', methods=['GET', 'POST'])
 def admin_manifestOrder():
