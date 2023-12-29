@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="/css/all.css">
+  <title>{% block title %}{% endblock %}</title>
+
+  {% block style %}{% endblock %}
+
+</head>
+<body>
+  <main>
+    <section id="sidebar">
+      <a href="/admin_dashboard" class="brand">
+        <i class='bx bxs-smile'></i>
+        <span class="text">BitTOP</span>
+      </a>
+      <ul class="side-menu ">
+          <li v-for="(item, index) in user_data" :key="item._id">
+            <i class='bx bxl-sketch' style='font-size: 35px;'></i>
+            <span style="font-size: 35px;"class="text">{{ session.account }}<span style="font-size: 16px;"class="text">，欢迎回来</span>
+            
+          </a>
+          <ul class="side-menu-dropdown">
+            <li id="admin_dashboard">
+              <a href="/admin_dashboard">
+                <i class='bx bxs-notepad'></i>
+                <span class="text">资讯总览</span>
+              </a>
+            </li>
+            
+            <li id="admin_dashboard"><a href="/admin_member"><i class='bx bxs-face' ></i><span class="text">会员总表</span></a></li>
+            <li id="admin_order"><a href="/admin_product"><i class='bx bxs-food-menu' ></i><span class="text">订单管理</span></a></li>
+            <li id="admin_bonus"><a href="/admin_usdt"><i class='bx bxs-bank' ></i><span class="text">充值/提领列表</span></a></li>
+            <li id="admin_user"><a href="/admin_user"><i class='bx bxs-plane-alt' ></i><span class="text">管理者列表</span></a></li>
+            <li id="admin_verify"><a href="/admin_verify"><i class='bx bxs-user-voice' ></i><span class="text">会员身份验证</span></a></li>
+            <li id="admin_log"><a href="/admin_log"><i class='bx bx-paperclip' ></i><span class="text">总报表</span></a></li>
+          </ul>
+        </li>
+
+      </ul>
+    </section>
+    <section id="content">
+      <!-- NAVBAR -->
+      <nav>
+        <i class='bx bx-menu' ></i>
+        <div>
+          <input type="checkbox" id="switch-mode" hidden>
+        <label for="switch-mode" class="switch-mode"></label>
+        <a href="#" class="notification">
+          <i class='bx bxs-bell' ></i>
+          <span class="num">8</span>
+        </a>
+        <a href="admin_logout" class="profile">
+          <i class='bx bx-log-out-circle' style='font-size: 35px;'></i>        
+        </a>
+        </div>
+        
+      </nav>
+      <!-- NAVBAR -->
+  
+      <!-- MAIN -->
+      <main>
+        {% block main %}
+        {% endblock %}
+      </main>
+      <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+    <!-- <div class="admin_header">
+      <a href="/admin_dashboard">首頁面板</a>
+      <a href="/admin_member">會員列表</a>
+      <a href="/admin_order?page=1&per=5">訂單列表</a>
+
+      {% if session.display_name == '最高管理者' %}
+        <a href="/admin_product">產品列表</a>
+        <a href="/admin_user">管理者帳號列表</a>
+        <a href="/admin_fakeData">訂單生成管理</a>
+        <a href="/admin_verify">身份驗證</a>
+        <a href="/admin_log">支出紀錄</a>
+      {% endif %}
+      <a href="/admin_fakeData2">訂單生成管理-收件人</a>
+      <a style="margin-left:auto; margin-right:0" href="/admin_logout">登出</a>
+    </div> -->
+  </main>
+  <script>
+    let route_name = location.href
+    let result = route_name.split('/').pop().split('?')[0]
+    let page_str = ''
+    if (result.split('_').length > 2) {
+      let newStrArr = [result.split('_')[0], result.split('_')[1]]
+      page_str = result.split('_')[2]
+      result = newStrArr.join('_')
+    } else {
+      page_str = result.split('_')[1]
+      result = result.split('_')[0]
+    }
+    let side_li = document.querySelector(`#${result}`)
+
+    const side_menu_title = document.querySelectorAll('.side-menu > li ')
+    console.log(side_menu_title)
+    side_menu_title.forEach((item, index)=> {
+      item.addEventListener('click', function (e) {
+        console.log('click')
+        const allDropdowns = document.querySelectorAll('.side-menu-dropdown');
+        allDropdowns.forEach((dropdown, key) => {
+          if (key != index) {
+            dropdown.classList.remove('show');
+          }
+        });
+        const dropdown = this.querySelector('.side-menu-dropdown');
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show')
+        } else {
+          dropdown.classList.add('show')
+        }
+      })
+    })
+
+
+
+
+
+
+
+    // TOGGLE SIDEBAR
+    const menuBar = document.querySelector('#content nav .bx.bx-menu');
+    const sidebar = document.getElementById('sidebar');
+
+    menuBar.addEventListener('click', function () {
+      sidebar.classList.toggle('hide');
+    })
+
+
+
+
+
+
+
+    // const searchButton = document.querySelector('#content nav form .form-input button');
+    // const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
+    // const searchForm = document.querySelector('#content nav form');
+
+    // searchButton.addEventListener('click', function (e) {
+    //   if (window.innerWidth < 576) {
+    //     e.preventDefault();
+    //     searchForm.classList.toggle('show');
+    //     if (searchForm.classList.contains('show')) {
+    //       searchButtonIcon.classList.replace('bx-search', 'bx-x');
+    //     } else {
+    //       searchButtonIcon.classList.replace('bx-x', 'bx-search');
+    //     }
+    //   }
+    // })
+
+
+
+
+
+    // if (window.innerWidth < 768) {
+    //   sidebar.classList.add('hide');
+    // } else if (window.innerWidth > 576) {
+    //   searchButtonIcon.classList.replace('bx-x', 'bx-search');
+    //   searchForm.classList.remove('show');
+    // }
+
+
+    // window.addEventListener('resize', function () {
+    //   if (this.innerWidth > 576) {
+    //     searchButtonIcon.classList.replace('bx-x', 'bx-search');
+    //     searchForm.classList.remove('show');
+    //   }
+    // })
+
+
+
+    const switchMode = document.getElementById('switch-mode');
+
+    switchMode.addEventListener('change', function () {
+      if (this.checked) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
+      }
+    })
+
+
+  </script>
+</body>
+</html>

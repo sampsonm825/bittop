@@ -1,0 +1,370 @@
+{% extends "member_base.html" %}
+
+{% block title %}後台管理-產品{% endblock %}
+
+{% block style %}
+<style>
+  button {
+    background: none;
+    border: 0;
+    color: inherit;
+    /* cursor: default; */
+    font: inherit;
+    line-height: normal;
+    overflow: visible;
+    padding: 0;
+    -webkit-appearance: button;
+    /* for input */
+    -webkit-user-select: none;
+    /* for button */
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+  }
+
+
+  .add-modal {
+    position: absolute;
+    width: 40%;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px;
+    background-color: #fff;
+    border: 2px solid #000;
+    z-index: 99;
+  }
+
+
+  form {
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+  .form-control {
+    margin-bottom: 15px;
+  }
+
+  .form-control input {
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  button {
+    padding: 4px 6px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  button.close {
+    background-color: rgb(141, 33, 33);
+  }
+
+  button[type="submit"] {
+    background-color: rgb(60, 60, 122);
+  }
+
+  td a {
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+  }
+
+  td a:first-child {
+    margin-bottom: 10px;
+  }
+
+  td a:last-child {
+    background-color: rgb(171, 83, 111);
+  }
+
+  td:last-child {
+    padding: 15px 0;
+  }
+
+  .page {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .page a {
+    color: white;
+    width: 3%;
+    background-color: rgb(89, 89, 206);
+    text-align: center;
+    padding: 5px;
+    border-right: 1px solid #fff;
+    transition: .5s;
+  }
+
+  .page a:hover {
+    background-color: rgb(35, 35, 168);
+  }
+
+  table tbody tr td a {
+    background-color: #3C91E6;
+    padding: 4px 10px;
+    color: #fff;
+    border-radius: 4px;
+    opacity: .8;
+    transition: opacity .3s;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  table tbody tr td a.delete {
+    background-color: orangered;
+  }
+
+  table tbody tr td a:hover {
+    opacity: 1;
+  }
+
+  a.add_btn {
+    text-decoration: none;
+    display: block;
+    width: 20%;
+    color: #000000;
+    font-size: 16px;
+    font-weight: bolder;
+    background-color: rgba(247, 52, 68, 0.692);
+    padding: 6px 10px;
+    text-align: center;
+    margin-right: 0;
+    margin-left: auto;
+    margin-bottom: 30px;
+  }
+
+  [v-cloak] {
+    display: none !important;
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<div id="app">
+  <div class="head-title">
+    <div class="left">
+      <h1>订单列表</h1>
+    </div>
+  </div>
+  <div class="product">
+    <a @click="modalControl(true, '新增'), tempProduct = {}" class="open add_btn" href="javascript:;">新增订单</a>
+    <div class="table-data">
+      <div class="order">
+        <div class="scroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>会员名称</th>
+                <th>USDT数量</th>
+                <th>汇率(单价)</th>
+                <th>总价(CNY)</th>
+                <th>最低单笔限额</th>
+                <th>最高单笔限额</th>
+                <th>自动下架时间</th>
+                <th>收款银行</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in my_product_data" :key="item._id">
+                <td>[[ item.account ]]</td>
+                <td>[[ item.sell_usdt ]]</td>
+                <td>[[ item.price ]]</td>
+                <td>[[ item.total ]]</td>
+                <td>[[ item.min_limit ]]</td>
+                <td>[[ item.max_limit ]]</td>
+                <td>[[ item.time ]]</td>
+                <td>[[ item.P_bank ]]</td>
+                <td>
+                  <span v-if="item.is_buy === 0">已上架</span>
+                  <span v-else-if="item.is_buy === 1">处理中</span>
+                  <span v-else-if="item.is_buy === 2">已完成</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="table-data">
+      <div class="order">
+        <div class="scroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>会员账号</th>
+                <th>USDT数量</th>
+                <th>汇率(单价)</th>
+                <th>总价(CNY)</th>
+                <th>最低单笔限额</th>
+                <th>最高单笔限额</th>
+                <th>自动下架时间</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in all_product_data" :key="item._id">
+                <td>[[ item.account ]]</td>
+                <td>[[ item.sell_usdt ]]</td>
+                <td>[[ item.price ]]</td>
+                <td>[[ item.total ]]</td>
+                <td>[[ item.min_limit ]]</td>
+                <td>[[ item.max_limit ]]</td>
+                <td>[[ item.time ]]</td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div v-show="is_modal" class="add-modal" v-cloak>
+      <h2>[[ modal_title ]]订单</h2>
+      <form action="/member_product" method="POST">
+        <div class="form-control">
+          <label for="sell_usdt">USDT数量:</label>
+          <input type="text" name="sell_usdt" placeholder="USDT数量" v-model="tempProduct.sell_usdt">
+        </div>
+        <div class="form-control">
+          <label for="price">汇率(单价):</label>
+          <input type="text" name="price" placeholder="汇率(单价)" v-model="tempProduct.price">
+        </div>
+        <div class="form-control">
+          <label for="total">总价(CNY):</label>
+          <input type="text" name="total" placeholder="总价(CNY)" v-model="tempProduct.total">
+        </div>
+        <div class="form-control">
+          <label for="min_limit">最低单笔限额 :</label>
+          <input type="text" name="min_limit" placeholder="最低单笔限额" v-model="tempProduct.min_limit">
+        </div>
+        <div class="form-control">
+          <label for="max_limit">最高单笔限额 :</label>
+          <input type="text" name="max_limit" placeholder="最高单笔限额" v-model="tempProduct.max_limit">
+        </div>
+        <input type="hidden" name="card_id" id="card_id">
+
+        <div class="form-control">
+          <label for="banklist">银行名称:</label>
+          <select id="banklist" name="banklist" v-model="selectedCardNumber">
+            <option v-for="card in bankcards" :value="card.cardnumber">
+                [[ card.bank ]]_[[ card.cardnumber.slice(-6) ]]
+            </option>
+        </select>
+        </div>
+        <div class="button-group">
+          <input type="hidden" name="id" v-model="tempProduct._id">
+
+          <button @click="modalControl(false), tempProduct = {}" type="button" class="add_btn close ">取消</button>
+          <button type="submit">[[ modal_title ]]</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/vue@next"></script>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        my_product_data: [], // 当前用户的订单
+        all_product_data: [], // 所有订单
+        is_modal: false,
+        tempProduct: {},
+        modal_title: '',
+        bankcards: [],  // 存储银行卡信息
+        selectedCardNumber: null,
+      }
+    },
+    compilerOptions: {
+      delimiters: ["[[", "]]"]
+    },
+    methods: {
+      modalControl(type, fun) {
+        type ? this.is_modal = true : this.is_modal = false
+        this.modal_title = fun
+        if (type && fun === '新增') {
+          this.setCurrentTime(); // 设置当前时间
+          this.tempProduct = {}; // 重置tempProduct
+        }
+      },
+      setCurrentTime() {
+        const now = new Date();
+        const formattedTime = now.toISOString().slice(0, 19).replace('T', ' ');
+        this.tempProduct.bank = formattedTime;
+      },
+    },
+    created() {
+      // 获取当前用户的订单
+      fetch('/api/get_my_product_data')
+        .then(response => response.json())
+        .then(data => {
+          this.my_product_data = data;
+        })
+        .catch(error => console.error('Error fetching my product data:', error));
+
+      // 获取所有订单
+      fetch('/api/get-all-product-data')
+        .then(response => response.json())
+        .then(data => {
+          this.all_product_data = data;
+        })
+        .catch(error => console.error('Error fetching all product data:', error));
+    }
+  })
+  app.mount('#app')
+</script>
+<script>
+  console.log("Raw data:", '{{ product_data | default([]) | tojson }}');
+</script>
+<script>
+  function fetchBankCards() {
+    // 发送AJAX请求到后端API (替换为你的API URL)
+    fetch('/api/get_bank_cards').then(response => {
+      if (response.ok) {
+        return response.json();  // 解析JSON数据
+      } else {
+        throw new Error('Failed to fetch bank cards');
+      }
+    }).then(cards => {
+      updateBankCardList(cards);  // 使用银行卡数据更新下拉菜单
+    }).catch(error => {
+      console.error('Error fetching bank cards:', error);
+    });
+  }
+
+  function updateBankCardList(cards) {
+    const banklist = document.getElementById('banklist');
+    banklist.innerHTML = '';  // 清空现有选项
+
+    // 为每张银行卡创建一个option元素
+    cards.forEach(card => {
+      const option = document.createElement('option');
+      option.value = card.card_id;  // 将card_id设置为option的值
+      option.textContent = `${card.bank}_${card.cardnumber.slice(-6)}`;  // 显示银行名称和卡号后6位
+      banklist.appendChild(option);  // 将option添加到select中
+    });
+  }
+
+  // 页面加载完成时获取银行卡数据
+  document.addEventListener('DOMContentLoaded', fetchBankCards);
+</script>
+
+{% endblock %}
