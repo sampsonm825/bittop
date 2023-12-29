@@ -2412,7 +2412,7 @@ def register():
         img = qr.make_image(fill_color="black", back_color="white")
 
         buffered = BytesIO()
-        img.save(buffered, format="PNG")
+        img.save(buffered)
         img_str = base64.b64encode(buffered.getvalue()).decode()
 
         # 处理密码
