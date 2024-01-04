@@ -63,16 +63,11 @@
 <div class="head-title">
 
   <div class="left">
-    <h1>收支记录</h1>
-  </div>
-  <div class="totals">
-    <p>提领总量: {{ total_withdrawn }}</p>
-    <p>充值总量: {{ total_deposited }}</p>
-    <p>售出总量: {{ total_sold }}</p>
+    <h1>下级会员记录</h1>
   </div>
 </div>
 <div class="date-filter">
-  <form id="dateFilterForm" method="get" action="/member_log">
+  <form id="dateFilterForm" method="get" action="/member_subordinateslog">
     <label for="start_date">开始日期:</label>
     <input type="date" id="start_date" name="start_date" required>
 

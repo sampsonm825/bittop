@@ -4,7 +4,6 @@
 
 {% block style %}
 <style>
-  
   .edit-modal {
     position: absolute;
     width: 40%;
@@ -54,29 +53,46 @@
     background-color: rgb(60, 60, 122);
   }
 
-  
+
   form.search {
     display: flex;
     justify-content: flex-end;
     width: 100%;
     gap: 30px;
     margin-bottom: 20px;
+    
   }
-  
+  form.search input[type="text"]{
+    font-size: 20px;
+
+  }
+
   form.search button {
-    background-color: blueviolet;
-    box-shadow: none;
-    outline: none;
-    border: none;
-    padding: 0 12px;
+    font-size: 20px;
+    padding: 5px 15px;
+    background-color: lightblue;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+
   }
+
+
   form.search a {
-    width: 80px;
-    text-align: center;
-    background-color: rgb(69, 69, 131);
-    color: white;
-    line-height: 26.5px;
+    font-size: 20px;
+    padding: 5px 15px;
+    background-color: lightblue;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+
   }
+
+
   table tbody tr td a {
     background-color: #3C91E6;
     padding: 4px 10px;
@@ -87,93 +103,76 @@
     display: block;
     margin-bottom: 10px;
   }
+
   table tbody tr td a.delete {
     background-color: orangered;
   }
+
   table tbody tr td a:hover {
     opacity: 1;
   }
+
   .disabled {
-  background-color: grey; /* 灰色背景表示禁用 */
-  pointer-events: none; /* 禁止鼠标事件 */
-  color: white; /* 修改文本颜色以提高对比度 */
-}
+    background-color: grey;
+    /* 灰色背景表示禁用 */
+    pointer-events: none;
+    /* 禁止鼠标事件 */
+    color: white;
+    /* 修改文本颜色以提高对比度 */
+  }
 </style>
 {% endblock %}
 
 {% block main %}
 <div class="head-title">
-    <div class="left">
-      <h1>充值/提领申請列表</h1>
+  <div class="left">
+    <h1>充值/提领申請列表</h1>
+  </div>
+  <div>
+    <form class="search" method="get" action="/admin_usdt">
+      <input type="text" name="search_account" placeholder="按账号搜索" value="{{ request.args.get('search_account', '') }}">
+      <button type="submit">搜索</button>
+      <a href="/admin_usdt" class="clear-search">清除搜索</a>
+    </form>
+  </div>
+</div>
+<div class="table-data">
+  <div class="order">
+    <div class="scroll-table">
+      <table>
+        <thead>
+          <tr>
+            <th>会员账号</th>
+            <th>充值数量</th>
+            <th>提领数量</th>
+            <th>申请时间</th>
+            <th>处理进度</th>
+            <th>功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in usdt_data %}
+          <tr>
+            <td>{{ item.account }}</td>
+            <td>{{ item.usdtcount }}</td>
+            <td>{{ item.usdtout }}</td>
+            <td>{{ item.time }}</td>
+            <td>
+              {% if item.status %}
+              已处理
+              {% else %}
+              处理中
+              {% endif %}
+            </td>
+            <td>
+              <a href="/admin_usdt?method=success&bId={{ item._id }}">确认</a>
+              <a class="delete" href="/admin_usdt?method=cancel&bId={{ item._id }}">取消</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="table-data">
-    <div class="order">
-      <div class="scroll-table">
-        <table>
-          <thead>
-            <tr>
-              <th>会员账号</th>
-              <th>充值数量</th>
-              <th>提领数量</th>
-              <th>申请时间</th>
-              <th>处理进度</th>
-              <th>功能</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in usdt_data %}
-            <tr>
-              <td>{{ item.account }}</td>
-              <td>{{ item.usdtcount }}</td>
-              <td>{{ item.usdtout }}</td>
-              <td>{{ item.time }}</td>
-              <td>
-                {% if item.status %}
-                  已处理
-                {% else %}
-                  处理中
-                {% endif %}
-              </td>
-              <td>
-                <a href="/admin_usdt?method=success&bId={{ item._id }}">确认</a>
-                <a class="delete" href="/admin_usdt?method=cancel&bId={{ item._id }}">取消</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+</div>
 {% endblock %}
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.confirm-btn').forEach(function(button) {
-      button.addEventListener('click', function(event) {
-        event.preventDefault();  // 阻止按钮的默认行为
-        var btnId = event.target.getAttribute('data-id');
-        var method = event.target.getAttribute('data-method');
-
-        fetch('/check_status?bId=' + btnId)
-          .then(response => response.json())
-          .then(data => {
-            if(data.status === 'processed') {
-              // 如果订单已处理，显示警告
-              alert('此订单已处理，无需重复操作。');
-            } else {
-              // 如果订单未处理，执行更新操作（确保你有一个函数来处理这部分）
-              updateOrderStatus(btnId, method);
-            }
-          });
-      });
-    });
-  });
-
-  function updateOrderStatus(orderId, method) {
-    // 在这里添加你的更新订单状态的逻辑
-    console.log("Updating order", orderId, "with method", method);
-    // 可能会再次发起fetch请求到另一个处理更新的后端路由
-  }
-</script>

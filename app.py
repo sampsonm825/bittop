@@ -438,8 +438,12 @@ def admin_usdt():
 
         usdt_data = usdtPlus_data + usdtminus_data
         usdt_data = sorted(usdt_data, key=lambda x: x['time'], reverse=True)
+        search_account = request.args.get('search_account', '').strip()  # 获取搜索参数
+        if search_account:  # 如果提供了搜索参数
+            # 过滤usdt_data，只保留匹配搜索账号的数据
+            usdt_data = [data for data in usdt_data if search_account in data.get('account', '')]
 
-        if request.method == 'GET':
+        if request.method == 'GET' and 'method' in request.args and 'bId' in request.args:
             method = request.args.get('method')
             record_id = ObjectId(request.args.get('bId'))
             record = next((item for item in usdt_data if item['_id'] == record_id), None)
@@ -454,7 +458,10 @@ def admin_usdt():
                 if method == 'success' and record['type'] == 'plus':
                     # 更新用户的 USDT 余额
                     new_usdt_balance = member_data['USDT'] + float(record['usdtcount'])
-                    shanghai_tz = pytz.timezone('Asia/Shanghai')
+                    Taipei_tz = pytz.timezone('Asia/Taipei')
+                    now_in_taipei = datetime.now(Taipei_tz)
+                    local_now = now_in_taipei.replace(tzinfo=None)
+
 
                     dbs.bittop_member.update_one({'_id': member_data['_id']}, {'$set': {'USDT': new_usdt_balance, 'mUSDT': new_usdt_balance}})
                     dbs.usdtPlus.update_one({'_id': record_id}, {'$set': {'status': True}})
@@ -465,12 +472,15 @@ def admin_usdt():
                         'time': record['time'],
                         'type': '充值',
                         'USDT': new_usdt_balance,
-                        'uptime': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M:%S'),
+                        'date': local_now,  # 这里存储完整的当前时间（年月日时分秒）
+                        'uptime': datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M:%S'),
                     })
                 elif method == 'cancel' and record['type'] == 'plus':
                     # 确认取消充值订单
                     dbs.usdtPlus.delete_one({'_id': record_id})
-                    shanghai_tz = pytz.timezone('Asia/Shanghai')
+                    Taipei_tz = pytz.timezone('Asia/Taipei')
+                    now_in_taipei = datetime.now(Taipei_tz)
+                    local_now = now_in_taipei.replace(tzinfo=None)
 
                     # Log the cancellation
                     dbs.member_usdtlog.insert_one({
@@ -479,15 +489,17 @@ def admin_usdt():
                         'time': record['time'],
                         'type': '充值失败',
                         'USDT': member_data['USDT'],
-                        'uptime': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M:%S'),
+                        'date': local_now,  # 这里存储完整的当前时间（年月日时分秒）
+                        'uptime': datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M:%S'),
                     })
                 elif method == 'success' and record['type'] == 'minus':
                     # 更新用户的 USDT 余额
                     new_usdt_balance = member_data['USDT'] - float(record['usdtout'])
                     dbs.bittop_member.update_one({'_id': member_data['_id']}, {'$set': {'USDT': new_usdt_balance}})
                     dbs.usdtminus.update_one({'_id': record_id}, {'$set': {'status': True}})
-                    shanghai_tz = pytz.timezone('Asia/Shanghai')
-
+                    Taipei_tz = pytz.timezone('Asia/Taipei')
+                    now_in_taipei = datetime.now(Taipei_tz)
+                    local_now = now_in_taipei.replace(tzinfo=None)
                     # Log the transaction
                     dbs.member_usdtlog.insert_one({
                         'account': record['account'],
@@ -495,14 +507,17 @@ def admin_usdt():
                         'time': record['time'],
                         'type': '提领',
                         'USDT': new_usdt_balance,
-                        'uptime': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M:%S'),
+                        'date': local_now,  # 这里存储完整的当前时间（年月日时分秒）
+                        'uptime': datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M:%S'),
                     })
                 elif method == 'cancel' and record['type'] == 'minus':
                     # 确认取消提领订单
                     new_usdt_balance = member_data['mUSDT'] + float(record['usdtout'])
                     dbs.bittop_member.update_one({'_id': member_data['_id']}, {'$set': {'mUSDT': new_usdt_balance}})
                     dbs.usdtminus.delete_one({'_id': record_id})
-                    shanghai_tz = pytz.timezone('Asia/Shanghai')
+                    Taipei_tz = pytz.timezone('Asia/Taipei')
+                    now_in_taipei = datetime.now(Taipei_tz)
+                    local_now = now_in_taipei.replace(tzinfo=None)
 
                     # Log the cancellation
                     dbs.member_usdtlog.insert_one({
@@ -510,8 +525,9 @@ def admin_usdt():
                         'usdtcount': record['usdtout'],
                         'time': record['time'],
                         'type': '提领失败',
+                        'date': local_now,  # 这里存储完整的当前时间（年月日时分秒）
                         'USDT':  member_data['USDT'],
-                        'uptime': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M:%S'),
+                        'uptime': datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M:%S'),
                     })
 
                 return redirect(url_for('admin_usdt'))
@@ -519,7 +535,7 @@ def admin_usdt():
         return render_template('admin_usdt.html', usdt_data=usdt_data)
     else:
         return redirect('admin_login')
-    
+
 @app.route('/check_status', methods=['GET'])
 def check_status():
     record_id = ObjectId(request.args.get('bId'))
@@ -688,37 +704,78 @@ def admin_log():
             }
             record_data.append(record)
 
-        return render_template('member_log.html', record_data=record_data)
+        return render_template('admin_log.html', record_data=record_data)
     else:
         return redirect('login')
 
 
-@app.route('/member_log', methods=['GET', 'POST'])
+@app.route('/member_log', methods=['GET'])
 def member_log():
     if 'account' in session:
         user_account = session['account']  # 获取当前登录的用户账号
 
-        # 从member_usdtlog集合中获取与当前用户相关的记录，并按时间降序排序
-        log_data = list(dbs.member_usdtlog.find({'account': user_account}).sort('uptime', -1))
+        # 获取前端传来的日期范围
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+
+        # 构建查询条件
+        query = {'account': user_account}
+        if start_date and end_date:
+            # 将字符串转换为日期对象
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            end_date = end_date + timedelta(days=1)  # 包括结束日期当天
+            query['date'] = {'$gte': start_date, '$lt': end_date}
+
+        # 查询数据库并按时间降序排序
+        log_data = list(dbs.member_usdtlog.find(query).sort('date', -1))
+
+        # 初始化总量变量
+        total_withdrawn = 0
+        total_deposited = 0
+        total_sold = 0
 
         # 将数据整理为前端所需格式
         record_data = []
         for item in log_data:
+            amount = float(item.get('usdtcount', 0)) if 'usdtcount' in item else float(item.get('usdtout', 0))
+            tradetype = item.get('type', '')
+
+            # 根据筛选结果计算总量
+            if tradetype == '提领':
+                total_withdrawn += amount*-1
+            elif tradetype == '充值':
+                total_deposited += amount
+            elif tradetype == '售出':
+                total_sold += amount
+
             record = {
-                'account': item.get('account', ''),
-                'amount': item.get('usdtcount', 0) if 'usdtcount' in item else item.get('usdtout', 0),
+                'account': user_account,
+                'amount': amount,
                 'USDT': item.get('USDT', 0),
-                'tradetype': item.get('type', ''),
+                'tradetype': tradetype,
                 'time': item.get('time', None),
                 'uptime': item.get('uptime', None)
-
             }
             record_data.append(record)
 
-        # 传递排序后的数据到前端模板
-        return render_template('member_log.html', record_data=record_data)
+        # 传递排序后的数据和总量到前端模板
+        return render_template('member_log.html', 
+                               record_data=record_data,
+                               total_withdrawn=total_withdrawn,
+                               total_deposited=total_deposited,
+                               total_sold=total_sold)
     else:
         return redirect('login')
+
+def calculate_total(account, tradetype):
+    # 根据账户和交易类型计算总量
+    pipeline = [
+        {"$match": {"account": account, "type": tradetype}},
+        {"$group": {"_id": None, "total": {"$sum": "$usdtcount"}}}
+    ]
+    total = list(dbs.member_usdtlog.aggregate(pipeline))
+    return abs(total[0]['total']) if total else 0
 # @app.route('/resetPassword', methods=['GET', 'POST'])
 # def resetPassword():
 #         if request.method == 'POST':
@@ -750,8 +807,56 @@ def member_log():
 #         else:
 #             return redirect('login')
     
+def get_all_subordinates(account, all_subs=[]):
+    user_info =dbs.bittop_member_.find_one({'account': account})
+    if user_info and 'subordinates' in user_info:
+        for subordinate in user_info['subordinates']:
+            all_subs.append(subordinate)
+            get_all_subordinates(subordinate, all_subs)
+    return list(set(all_subs))  # 删除重复项
+@app.route('/member_subordinateslog', methods=['GET'])
+def member_subordinateslog():
+    if 'account' in session:
+        user_account = session['account']
 
+        # 获取当前用户以及所有下级会员的账号
+        all_subordinates = get_all_subordinates(user_account)
 
+        # 获取前端传来的日期范围
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+
+        # 构建查询条件
+        query = {'account': {'$in': all_subordinates}, 'type': '售出'}
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            end_date += timedelta(days=1)
+            query['date'] = {'$gte': start_date, '$lt': end_date}
+
+        # 查询售出记录并按时间降序排序
+        sold_records = list(dbs.member_usdtlog.find(query).sort('date', -1))
+
+        # 初始化总量变量
+        total_sold = 0
+
+        # 整理记录为前端所需格式并计算总量
+        record_data = []
+        for record in sold_records:
+            amount = float(record.get('usdtcount', 0))
+            total_sold += amount  # 累加售出量
+            record_data.append({
+                'account': record['account'],
+                'amount': amount,
+                'tradetype': record['type'],
+                'USDT': record.get('USDT', 0),
+                'time': record.get('time', None),
+                'uptime': record.get('uptime', None)
+            })
+
+        return render_template('member_log.html', record_data=record_data, total_sold=total_sold)
+    else:
+        return redirect('login')
 @app.route('/cart/<product>')
 def cart(product):
     if 'id' in session:
@@ -1198,11 +1303,47 @@ def admin_member():
             for doc in bittop_member_find:
                 doc['_id'] = str(doc['_id'])
                 member_data.append(doc)
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
 
-            return render_template("admin_member.html", member_data=member_data,page_data=page_data)
+        try:
+                # 如果提供了日期，则解析日期字符串为 datetime 对象
+            if start_date and end_date:
+                    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+                    end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+            else:
+                    # 如果没有提供日期，使用默认的今日日期区间
+                    start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    end_date = start_date + timedelta(days=1)
+
+            # 为每个会员计算当日的usdtcount总和
+            daily_volumes = {}
+            logs = dbs.member_usdtlog.aggregate([
+                {"$match": {
+                    "date": {"$gte": start_date, "$lt": end_date},
+                    "type": "售出"  # 筛选类型为"售出"的记录
+                }},
+                {"$group": {
+                    "_id": "$account",
+                    "total": {"$sum": "$usdtcount"}
+                }}
+            ])
+            for log in logs:
+                daily_volumes[log["_id"]] = log["total"]
+
+            # 将计算得到的每日交易量添加到member_data中
+            for member in member_data:
+                account = member.get('account')
+                member['daily_volume'] = daily_volumes.get(account, 0)
+
+            return render_template("admin_member.html", member_data=member_data, page_data=page_data)
+        except ValueError:
+                # 处理无效日期输入的情况
+                return "Invalid date format", 400
 
     else:
-        return redirect('admin_login')
+        return "Unauthorized", 401
+
 
 
 @app.route('/admin_dashboard',methods=['GET', 'POST'])
@@ -1235,9 +1376,10 @@ def get_pending_orders_count():
 @app.route('/get_total_usdt_sold_today')
 def get_total_usdt_sold_today():
     # 获取当天的开始和结束时间
-    tz = pytz.timezone('Asia/Shanghai')  # 假设服务器在上海
+    tz = pytz.timezone('Asia/Taipei')  # 假设服务器在上海
     today_start = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
+    print(today_start)
 
     pipeline = [
         {
@@ -1346,6 +1488,73 @@ def order():
     else:
         return redirect('login')
     
+def find_ancestors(member, ancestors=[]):
+    if 'invitedCode' in member and member['invitedCode']:
+        superior = dbs.bittop_member.find_one({"account": member['invitedCode']})
+        if superior and superior['account'] not in ancestors:
+            ancestors.append(superior['account'])
+            find_ancestors(superior, ancestors)
+    return ancestors
+def find_direct_descendants(member):
+    # 直接下级
+    direct_descendants = member.get('subordinates', [])
+    return direct_descendants
+
+def find_indirect_descendants(member, all_descendants=[]):
+    # 间接下级
+    if 'subordinates' in member and member['subordinates']:
+        for subordinate_account in member['subordinates']:
+            subordinate = dbs.bittop_member.find_one({"account": subordinate_account})
+            if subordinate:
+                if subordinate['account'] not in all_descendants:
+                    all_descendants.append(subordinate['account'])
+                    find_indirect_descendants(subordinate, all_descendants)
+    # 移除直接下级
+    direct_descendants = find_direct_descendants(member)
+    return [descendant for descendant in all_descendants if descendant not in direct_descendants]
+
+@app.route('/api/get_hierarchy', methods=['GET'])
+def get_hierarchy():
+    account = request.args.get('account')
+    member = dbs.bittop_member.find_one({"account": account})
+    if member:
+        ancestors = find_ancestors(member, [])
+        direct_descendants = find_direct_descendants(member)
+        indirect_descendants = find_indirect_descendants(member, [])
+        return jsonify(ancestors=ancestors, direct_descendants=direct_descendants, indirect_descendants=indirect_descendants)
+    else:
+        return jsonify(error='会员不存在'), 404
+@app.route('/api/unprocessed-requests-count')
+
+def get_unprocessed_requests_count():
+    usdtPlus_collection = dbs.usdtPlus  # usdtPlus 集合
+    usdtminus_collection = dbs.usdtminus  # usdtMinus 集合
+
+    # 查询 status 为 False 的文档数量
+    unprocessed_plus_count = usdtPlus_collection.count_documents({'status': False})
+    unprocessed_minus_count = usdtminus_collection.count_documents({'status': False})
+
+    total_unprocessed = unprocessed_plus_count + unprocessed_minus_count
+    return jsonify(count=total_unprocessed)
+
+@app.route('/api/member-usdt-count')
+def get_member_usdt_count():
+    member_usdt_collection = dbs.member_usdt  # 假设您有一个名为 member_usdt 的集合或表
+
+    # 查询 is_buy 为 0 的文档数量
+    is_buy_zero_count = member_usdt_collection.count_documents({'is_buy': 0})
+
+    return jsonify(count=is_buy_zero_count)
+
+@app.route('/api/memberverify-count')
+def get_memberverify_count():
+    member_collection = dbs.bittop_member
+
+    # 查询  为 0 的文档数量
+    is_verify_zero_count = member_collection.count_documents({'is_verify': 0})
+
+    return jsonify(count=is_verify_zero_count)
+    
 @app.route('/admin_base', methods=['GET', 'POST'])
 def admin_base():
     if 'account' in session :
@@ -1408,10 +1617,11 @@ def admin_login():
 def memberdousdt():
     if 'account' in session:
         user_account = session['account']
-        shanghai_tz = pytz.timezone('Asia/Shanghai')
+        Taipei_tz = pytz.timezone('Asia/Taipei')
 
-        today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
-
+        # 获取当前的详细时间，并转换为不带时区的本地时间
+        now_in_taipei = datetime.now(Taipei_tz)
+        today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
         # 处理 POST 请求
         if request.method == 'POST':
@@ -1423,7 +1633,7 @@ def memberdousdt():
             # outtime = request.form.get('outtime')
             usdtout = request.form.get('usdtout')
             usdtaddress = request.form.get('usdtaddress')
-            time = datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M')  # 将时间转换为字符串格式
+            time = datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M')  # 将时间转换为字符串格式
             status = request.form.get('status')
 
             if not request.form.get('id'):
@@ -1623,9 +1833,11 @@ def admin_product():
             potp = request.form['potp']
             potp_result = verify_potp(potp)
             potp_result = True
-            shanghai_tz = pytz.timezone('Asia/Shanghai')
+            Taipei_tz = pytz.timezone('Asia/Taipei')
 
-            today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+            # 获取当前的详细时间，并转换为不带时区的本地时间
+            now_in_taipei = datetime.now(Taipei_tz)
+            today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
             if potp_result == True:
                 account = request.form['account']
@@ -1723,9 +1935,11 @@ def confirm_order(order_id):
     try:
         # 获取订单信息
         order = dbs.member_usdt.find_one({'_id': ObjectId(order_id)})
-        shanghai_tz = pytz.timezone('Asia/Shanghai')
+        Taipei_tz = pytz.timezone('Asia/Taipei')
 
-        today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+        # 获取当前的详细时间，并转换为不带时区的本地时间
+        now_in_taipei = datetime.now(Taipei_tz)
+        today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
         
         if order and order.get('is_buy') == 0:
@@ -1740,18 +1954,24 @@ def confirm_order(order_id):
             
             if member_data:
                 updated_usdt = member_data['USDT'] - float(order['sell_usdt'])
-                shanghai_tz = pytz.timezone('Asia/Shanghai')
+                Taipei_tz = pytz.timezone('Asia/Taipei')
+                now_in_taipei = datetime.now(Taipei_tz)
+                
+                # 将时区感知的当前台北时间转换为不带时区的本地时间
+                local_now = now_in_taipei.replace(tzinfo=None)
 
                 # 插入记录到 member_usdtlog
                 dbs.member_usdtlog.insert_one({
                     'account': order['account'],
                     'usdtcount': order['sell_usdt'],
-                    'time': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M'),
+                    'time': local_now.strftime('%Y-%m-%d %H:%M'),  # 这里存储较少的时间信息
                     'type': '售出',
-                    'date': today_date,  # 新增date字段，只存储日期
-                    'uptime': datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M:%S'),
-                    'USDT': member_data['USDT'] - float(order['sell_usdt'])  # 假设你想记录交易后的USDT余额
+                    'date': local_now,  # 这里存储完整的当前时间（年月日时分秒）
+                    'uptime': local_now.strftime('%Y-%m-%d %H:%M:%S'),
+                    'USDT': updated_usdt  # 记录交易后的USDT余额
                 })
+                
+                # 更新会员的USDT余额
                 dbs.bittop_member.update_one(
                     {'account': order['account']},
                     {'$set': {'USDT': updated_usdt}}
@@ -1790,9 +2010,11 @@ def member_product():
         member_info = dbs['bittop_member'].find_one({'account': current_account})
         member_usdt = member_info['USDT'] if member_info else 0
         bankcards = member_info.get('cards', []) if member_info else []
-        shanghai_tz = pytz.timezone('Asia/Shanghai')
+        Taipei_tz = pytz.timezone('Asia/Taipei')
 
-        today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+        # 获取当前的详细时间，并转换为不带时区的本地时间
+        now_in_taipei = datetime.now(Taipei_tz)
+        today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
 
         if request.method == 'POST':
@@ -1818,7 +2040,7 @@ def member_product():
                     'total': total,
                     'min_limit': min_limit,
                     'max_limit': max_limit,
-                    'time' : (datetime.now(shanghai_tz) + timedelta(hours=6)).strftime('%Y-%m-%d %H:%M'),
+                    'time' : (datetime.now(Taipei_tz) + timedelta(hours=6)).strftime('%Y-%m-%d %H:%M'),
                     'is_buy': 0,
                     'P_bank': f"{card_info['bank']}_{card_info['cardnumber'][-6:]}",
                     'carddocument': card_info,
@@ -2094,10 +2316,14 @@ def recharge():
     if usdtcount and tradecode and account:
         try:
             # 获取当前时间
-            shanghai_tz = pytz.timezone('Asia/Shanghai')
+            Taipei_tz = pytz.timezone('Asia/Taipei')
 
-            current_time = datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M')
-            today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+            current_time = datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M')
+            Taipei_tz = pytz.timezone('Asia/Taipei')
+
+            # 获取当前的详细时间，并转换为不带时区的本地时间
+            now_in_taipei = datetime.now(Taipei_tz)
+            today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
 
             # 插入数据到数据库
@@ -2123,11 +2349,14 @@ def submit_usdt():
     if data.get('usdtcount') and data.get('tradecode') and account:
         try:
             # 获取当前时间
-            shanghai_tz = pytz.timezone('Asia/Shanghai')
+            Taipei_tz = pytz.timezone('Asia/Taipei')
 
-            current_time = datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M')
-            today_date = datetime.now(shanghai_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+            current_time = datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M')
+            Taipei_tz = pytz.timezone('Asia/Taipei')
 
+            # 获取当前的详细时间，并转换为不带时区的本地时间
+            now_in_taipei = datetime.now(Taipei_tz)
+            today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
 
             # 插入数据到数据库
             dbs.usdtPlus.insert_one({
@@ -2172,9 +2401,9 @@ def submit_withdraw():
         # 更新用户的 USDT 余额
         new_balance = usdt_balance - usdtout
         dbs.bittop_member.update_one({'account': account}, {'$set': {'mUSDT': new_balance}})
-        shanghai_tz = pytz.timezone('Asia/Shanghai')
+        Taipei_tz = pytz.timezone('Asia/Taipei')
 
-        current_time = datetime.now(shanghai_tz).strftime('%Y-%m-%d %H:%M')
+        current_time = datetime.now(Taipei_tz).strftime('%Y-%m-%d %H:%M')
         dbs.usdtminus.insert_one({
             'account': account,
             'usdtout': usdtout,

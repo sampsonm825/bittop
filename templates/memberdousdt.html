@@ -63,7 +63,7 @@
     /* 内边距 */
     border-radius: 5px;
     /* 圆角边框 */
-    z-index: 1001;
+    z-index: 3000;
     /* 确保在覆盖层上方 */
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     /* 阴影效果 */
@@ -297,38 +297,61 @@
   }
 
   .error-modal {
-    position: fixed; /* 固定位置，始终显示在屏幕中央 */
+    position: fixed;
+    /* 固定位置，始终显示在屏幕中央 */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px; /* 弹窗宽度 */
-    padding: 20px; /* 内边距 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-    background-color: #ffdddd; /* 背景颜色 */
-    border: 1px solid #ff5555; /* 边框 */
-    border-radius: 10px; /* 边框圆角 */
-    text-align: center; /* 文本居中 */
-    z-index: 1000; /* 确保弹窗在其他内容上方 */
+    width: 300px;
+    /* 弹窗宽度 */
+    padding: 20px;
+    /* 内边距 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 阴影效果 */
+    background-color: #ffdddd;
+    /* 背景颜色 */
+    border: 1px solid #ff5555;
+    /* 边框 */
+    border-radius: 10px;
+    /* 边框圆角 */
+    text-align: center;
+    /* 文本居中 */
+    z-index: 1000;
+    /* 确保弹窗在其他内容上方 */
   }
 
   .error-modal p {
-    color: #000000; /* 文本颜色 */
-    margin: 10px 0; /* 段落间距 */
-    font-size: 16px; /* 字体大小 */
+    color: #000000;
+    /* 文本颜色 */
+    margin: 10px 0;
+    /* 段落间距 */
+    font-size: 16px;
+    /* 字体大小 */
   }
 
   .error-modal button {
-    background-color: #ff5555; /* 按钮背景颜色 */
-    color: white; /* 按钮文字颜色 */
-    border: none; /* 无边框 */
-    padding: 10px 20px; /* 按钮内边距 */
-    text-align: center; /* 文本居中 */
-    text-decoration: none; /* 无文本装饰 */
-    display: inline-block; /* 行内块显示 */
-    font-size: 16px; /* 字体大小 */
-    margin: 4px 2px; /* 外边距 */
-    cursor: pointer; /* 鼠标光标样式 */
-    border-radius: 5px; /* 按钮边框圆角 */
+    background-color: #ff5555;
+    /* 按钮背景颜色 */
+    color: white;
+    /* 按钮文字颜色 */
+    border: none;
+    /* 无边框 */
+    padding: 10px 20px;
+    /* 按钮内边距 */
+    text-align: center;
+    /* 文本居中 */
+    text-decoration: none;
+    /* 无文本装饰 */
+    display: inline-block;
+    /* 行内块显示 */
+    font-size: 16px;
+    /* 字体大小 */
+    margin: 4px 2px;
+    /* 外边距 */
+    cursor: pointer;
+    /* 鼠标光标样式 */
+    border-radius: 5px;
+    /* 按钮边框圆角 */
   }
 
   /* Add Animation */
@@ -343,7 +366,7 @@
       opacity: 1
     }
   }
-  
+
 
 
   [v-cloak] {
@@ -353,7 +376,6 @@
 {% endblock %}
 
 {% block main %}
-<div class="modal-overlay" id="modal-overlay" @click="closeModal"></div>
 <div id="app">
   <div class="head-title">
     <div class="left">
@@ -361,8 +383,10 @@
     </div>
   </div>
   <div class="product">
+    <div class="modal-overlay" id="modal-overlay" @click="closeModal"></div>
+
     <a @click="modalControl(true, '新增'), tempProduct = {}" class="open add_btn" href="javascript:;">新增充值订单</a>
-    <div v-if="is_modal" class="add-modal">
+    <div class="add-modal" v-if="is_modal">
       <!-- 表单内容 -->
       <form @submit.prevent="submitForm">
 
@@ -385,8 +409,9 @@
           </select>
         </div>
         <div class="form-control">
-          <label for="address">钱包地址:</label> <!-- 修改for属性 -->
-          <p>TMUw65KFv5rbnfSGMKEufxvHwonLLc9vQW</p> <!-- 直接显示地址 -->
+          <label for="address">钱包地址:</label>
+          <p id="walletAddress">TMUw65KFv5rbnfSGMKEufxvHwonLLc9vQW</p>
+          <button @click="copyAddress">复制地址</button>
         </div>
         <div class="form-control">
           <label for="tradecode">交易码</label>
@@ -602,11 +627,8 @@
       },
 
       modalControl(type, fun) {
-        document.getElementById('modal-overlay').style.display = type ? 'block' : 'none';
         this.is_modal = type;
-        type ? this.is_modal = true : this.is_modal = false;
-        console.log("modalControl 被调用，is_modal:", this.is_modal);
-        this.modal_title = fun
+        this.modal_title = fun;
         if (type && fun === '新增') {
           this.setCurrentTime(); // 设置当前时间
           this.tempProduct = {}; // 重置tempProduct
@@ -642,6 +664,18 @@
       this.is_modal = false;
       this.is_modal_withdraw = false;
       document.getElementById('modal-overlay').style.display = 'none';
+    },
+    copyAddress() {
+      // 获取要复制的地址
+      const address = document.getElementById('walletAddress').innerText;
+      // 创建一个临时的input元素，用于复制文本
+      const tempInput = document.createElement('input');
+      document.body.appendChild(tempInput);
+      tempInput.value = address;
+      tempInput.select();  // 选择文本
+      document.execCommand('copy');  // 执行复制命令
+      document.body.removeChild(tempInput);  // 移除临时元素
+      alert('地址已复制到剪贴板');  // 反馈给用户
     },
 
   })

@@ -596,21 +596,31 @@ body {
   cursor: pointer;
   /* 鼠标悬停时变为指针 */
 }
+
 #editRate {
-  width: 100px;         /* 输入框的宽度 */
-  height: 30px;         /* 输入框的高度 */
-  font-size: 18pt;      /* 字体大小 */
-  padding: 5px 10px;    /* 内边距 */
-  border: 1px solid #ccc; /* 边框颜色和样式 */
-  background-color: #fff; /* 背景颜色 */
-  color: black;         /* 文本颜色 */
-  text-align: center;   /* 文本居中对齐 */
+  width: 100px;
+  /* 输入框的宽度 */
+  height: 30px;
+  /* 输入框的高度 */
+  font-size: 18pt;
+  /* 字体大小 */
+  padding: 5px 10px;
+  /* 内边距 */
+  border: 1px solid #ccc;
+  /* 边框颜色和样式 */
+  background-color: #fff;
+  /* 背景颜色 */
+  color: black;
+  /* 文本颜色 */
+  text-align: center;
+  /* 文本居中对齐 */
 }
 
 /* 可选：当输入框获得焦点时改变边框颜色 */
 #editRate:focus {
   border-color: #4A90E2;
-  outline: none;       /* 移除焦点时浏览器可能会添加的默认轮廓 */
+  outline: none;
+  /* 移除焦点时浏览器可能会添加的默认轮廓 */
 }
 
 #content main .box-info {

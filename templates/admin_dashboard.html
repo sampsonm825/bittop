@@ -112,7 +112,7 @@
   // 初始加载时更新进行中的订单数
   updatePendingOrders();
 </script>
-<script>
+<!-- <script>
   window.onload = function () {
     fetch('/calculate_total_usdt')
       .then(response => response.json())
@@ -124,7 +124,7 @@
         document.getElementById('totalUsdt').innerText = '加载失败';
       });
   };
-</script>
+</script> -->
 
 <script>
   document.getElementById('editBtn').onclick = function () {
@@ -167,7 +167,7 @@
 </script>
 <script>
   // 当页面加载完成时执行
-  window.onload = function () {
+  window.addEventListener('load', function() {
     // 发送请求到你的路由
     fetch('/get_total_usdt_sold_today')
       .then(response => {
@@ -187,6 +187,6 @@
         console.error('Error fetching total USDT sold today:', error);
         document.getElementById('totalUsdtSoldToday').innerText = '加载失败';
       });
-  };
+  });
 </script>
 {% endblock %}
