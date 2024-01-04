@@ -814,8 +814,8 @@ def get_all_subordinates(account, all_subs=[]):
             all_subs.append(subordinate)
             get_all_subordinates(subordinate, all_subs)
     return list(set(all_subs))  # 删除重复项
-@app.route('/member_subordinateslog', methods=['GET'])
-def member_subordinateslog():
+@app.route('/member_subordinates', methods=['GET'])
+def member_subordinates():
     if 'account' in session:
         user_account = session['account']
 
@@ -854,7 +854,7 @@ def member_subordinateslog():
                 'uptime': record.get('uptime', None)
             })
 
-        return render_template('member_log.html', record_data=record_data, total_sold=total_sold)
+        return render_template('member_subordinates.html', record_data=record_data, total_sold=total_sold)
     else:
         return redirect('login')
 @app.route('/cart/<product>')
