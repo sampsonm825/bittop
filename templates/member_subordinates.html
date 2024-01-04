@@ -61,22 +61,11 @@
 
 {% block main %}
 <div class="head-title">
-
   <div class="left">
     <h1>下级会员记录</h1>
   </div>
 </div>
-<div class="date-filter">
-  <form id="dateFilterForm" method="get" action="/member_subordinateslog">
-    <label for="start_date">开始日期:</label>
-    <input type="date" id="start_date" name="start_date" required>
 
-    <label for="end_date">结束日期:</label>
-    <input type="date" id="end_date" name="end_date" required>
-
-    <button type="submit">筛选</button>
-  </form>
-</div>
 <div class="table-data">
   <div class="order">
     <div class="scroll-table">
@@ -84,21 +73,14 @@
         <thead>
           <tr>
             <th>账号</th>
-            <th>交易类型</th>
-            <th>总出售USDT</th>
-
-
-
+            <th>当日USDT售出总和</th>
           </tr>
         </thead>
         <tbody>
-          {% for record in record_data %}
+          {% for account, total_sold in account_totals.items() %}
           <tr>
-            <td>{{ record.account }}</td>
-            <td>{{ record.tradetype }}</td>
-            <td>{{ record.amount }}</td>
-
-
+            <td>{{ account }}</td>
+            <td>{{ total_sold }}</td>
           </tr>
           {% endfor %}
         </tbody>

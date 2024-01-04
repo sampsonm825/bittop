@@ -807,54 +807,46 @@ def calculate_total(account, tradetype):
 #         else:
 #             return redirect('login')
     
-def get_all_subordinates(account, all_subs=[]):
-    user_info =dbs.bittop_member_.find_one({'account': account})
+def get_all_subordinates(account, all_subs=None):
+    if all_subs is None:
+        all_subs = []
+    # 使用传入的account变量查询数据库
+    user_info = dbs.bittop_member.find_one({'account': account})
+    print(account)
+    print("检查用户信息:", user_info)  # 打印检查用户信息
+
     if user_info and 'subordinates' in user_info:
         for subordinate in user_info['subordinates']:
             all_subs.append(subordinate)
             get_all_subordinates(subordinate, all_subs)
-    return list(set(all_subs))  # 删除重复项
+        print(all_subs)
+    return list(set(all_subs))
+
 @app.route('/member_subordinates', methods=['GET'])
 def member_subordinates():
     if 'account' in session:
         user_account = session['account']
-
-        # 获取当前用户以及所有下级会员的账号
         all_subordinates = get_all_subordinates(user_account)
 
-        # 获取前端传来的日期范围
-        start_date = request.args.get('start_date')
-        end_date = request.args.get('end_date')
+        today = datetime.today()
+        start_date = request.args.get('start_date') or today.strftime('%Y-%m-%d')
+        end_date = request.args.get('end_date') or today.strftime('%Y-%m-%d')
 
-        # 构建查询条件
-        query = {'account': {'$in': all_subordinates}, 'type': '售出'}
-        if start_date and end_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d')
-            end_date = datetime.strptime(end_date, '%Y-%m-%d')
-            end_date += timedelta(days=1)
-            query['date'] = {'$gte': start_date, '$lt': end_date}
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
 
-        # 查询售出记录并按时间降序排序
+        query = {'account': {'$in': all_subordinates}, 'type': '售出', 'date': {'$gte': start_date, '$lt': end_date}}
         sold_records = list(dbs.member_usdtlog.find(query).sort('date', -1))
 
-        # 初始化总量变量
-        total_sold = 0
-
-        # 整理记录为前端所需格式并计算总量
-        record_data = []
+        account_totals = {account: 0 for account in all_subordinates}
         for record in sold_records:
+            account = record['account']
             amount = float(record.get('usdtcount', 0))
-            total_sold += amount  # 累加售出量
-            record_data.append({
-                'account': record['account'],
-                'amount': amount,
-                'tradetype': record['type'],
-                'USDT': record.get('USDT', 0),
-                'time': record.get('time', None),
-                'uptime': record.get('uptime', None)
-            })
+            account_totals[account] += amount
+        print(sold_records)
+        print(account_totals)
 
-        return render_template('member_subordinates.html', record_data=record_data, total_sold=total_sold)
+        return render_template('member_subordinates.html', account_totals=account_totals)
     else:
         return redirect('login')
 @app.route('/cart/<product>')
