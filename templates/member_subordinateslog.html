@@ -84,11 +84,10 @@
         <thead>
           <tr>
             <th>账号</th>
-            <th>变更USDT数量</th>
             <th>交易类型</th>
-            <th>USDT余额</th>
-            <th>申请时间</th>
-            <th>完成时间</th>
+            <th>总出售USDT</th>
+
+
 
           </tr>
         </thead>
@@ -96,11 +95,9 @@
           {% for record in record_data %}
           <tr>
             <td>{{ record.account }}</td>
-            <td>{{ record.amount }}</td>
             <td>{{ record.tradetype }}</td>
-            <td>{{ record.USDT }}</td>
-            <td>{{ record.time }}</td>
-            <td>{{ record.uptime }}</td>
+            <td>{{ record.amount }}</td>
+
 
           </tr>
           {% endfor %}
