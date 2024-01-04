@@ -65,7 +65,17 @@
     <h1>下级会员记录</h1>
   </div>
 </div>
+<div class="date-filter">
+  <form id="dateFilterForm" method="get" action="/member_subordinates">
+    <label for="start_date">开始日期:</label>
+    <input type="date" id="start_date" name="start_date" required>
 
+    <label for="end_date">结束日期:</label>
+    <input type="date" id="end_date" name="end_date" required>
+
+    <button type="submit">筛选</button>
+  </form>
+</div>
 <div class="table-data">
   <div class="order">
     <div class="scroll-table">

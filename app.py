@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, request, jsonify, flash,session, json
+from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson import json_util, ObjectId
@@ -45,6 +46,8 @@ app = Flask(
     static_folder='public',
     static_url_path='/'
 )  
+CORS(app)  # 这将使得整个应用都允许跨域请求
+
 app.json_encoder = CustomJSONEncoder
 
 app.secret_key = os.urandom(24)
