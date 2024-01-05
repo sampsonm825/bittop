@@ -293,13 +293,10 @@
                 <option value="trc20">ERC20</option>
               </select>
             </div>
-            <div class="recharge-form">
-              <label for="qrcode">扫描充值:</label>
-              <img id="qrcode" src="{{ url_for('static', filename='path/to/your/qrcode.png') }}" alt="QR Code"
-                style="width:100px;height:100px;">
-            </div>
-            <div class="recharge-form">
-              <input type="text" value="您的QR Code地址" readonly>
+            <div class="form-control">
+              <label for="address">钱包地址:</label>
+              <p id="walletAddress">TMUw65KFv5rbnfSGMKEufxvHwonLLc9vQW</p>
+              <button onclick="copyAddress()">复制地址</button>
             </div>
             <div class="recharge-form">
               <label for="tradecode">交易码</label>
@@ -309,7 +306,7 @@
               <label for="tradetime">交易完成时间</label>
               <input type="text" id="tradetime" name="tradetime" required>
             </div>
-            <button type="submit">充值完成</button>
+            <button type="submit" form="recharge-form">充值完成</button>
           </form>
         </div>
       </div>
@@ -612,7 +609,7 @@
           <td>
             <button onclick="deleteCard('{{ card.cardnumber }}')">删除</button>
           </td>
-          
+
         </tr>
         {% endfor %}
       </tbody>
@@ -622,6 +619,56 @@
 </div>
 {{ member_data.some_field | default('') }}
 <script>
+function copyAddress() {
+    // 获取要复制的钱包地址元素
+    var walletAddress = document.getElementById("walletAddress").innerText;
+
+    // 创建一个临时的input元素来保存钱包地址
+    var tempInput = document.createElement("input");
+    tempInput.value = walletAddress;
+    document.body.appendChild(tempInput);
+
+    // 选择这个临时input元素的内容
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // 对于移动设备
+
+    // 执行复制操作
+    document.execCommand("copy");
+
+    // 删除临时input元素
+    document.body.removeChild(tempInput);
+
+    // 可选：通知用户地址已复制
+    alert("钱包地址已复制！");
+}
+document.getElementById('recharge-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // 准备发送到服务器的数据
+    var formData = new FormData(this);
+
+    // 发送数据到服务器
+    fetch('/recharge', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if(response.ok) {
+            // 数据成功发送到服务器，刷新页面或进行其他操作
+            console.log("充值完成，服务器响应成功");
+            window.location.reload(); // 刷新页面
+
+        } else {
+            // 处理错误
+            console.error('服务器响应错误');
+        }
+    })
+    .catch(error => {
+        // 处理错误
+        console.error('发送数据时发生错误:', error);
+    });
+});
+
   function deleteCard(cardNumber) {
     // 阻止表单的默认提交行为
     event.preventDefault();
@@ -632,23 +679,23 @@
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: 'cardnumber=' + cardNumber  
+      body: 'cardnumber=' + cardNumber
     })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success) {
-        // 删除成功，刷新页面
-        window.location.reload();
-      } else {
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // 删除成功，刷新页面
+          window.location.reload();
+        } else {
+          // 处理错误
+          alert('删除失败');
+        }
+      })
+      .catch(error => {
         // 处理错误
-        alert('删除失败');
-      }
-    })
-    .catch(error => {
-      // 处理错误
-      console.error('发送删除请求时发生错误:', error);
-      alert('发送删除请求时发生错误');
-    });
+        console.error('发送删除请求时发生错误:', error);
+        alert('发送删除请求时发生错误');
+      });
   }
 </script>
 
@@ -821,42 +868,42 @@
     if (event.target == modal2) {
       modal2.style.display = 'none';
     }
-  
-  
+
+
   }
-  
+
 </script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // 获取表单元素
     var form = document.getElementById('add-card-form');
-    
+
     // 监听表单的提交事件
-    form.addEventListener('submit', function(event) {
+    form.addEventListener('submit', function (event) {
       event.preventDefault();  // 阻止表单的默认提交行为
-      
+
       // 准备发送到服务器的数据
       var formData = new FormData(form);
-      
+
       // 发送数据到服务器
       fetch(form.action, {
         method: 'POST',
         body: formData
       })
-      .then(response => {
-        if(response.ok) {
-          // 数据成功发送到服务器，刷新页面
-          window.location.reload();
-        } else {
+        .then(response => {
+          if (response.ok) {
+            // 数据成功发送到服务器，刷新页面
+            window.location.reload();
+          } else {
+            // 处理错误
+            console.error('服务器响应错误');
+          }
+        })
+        .catch(error => {
           // 处理错误
-          console.error('服务器响应错误');
-        }
-      })
-      .catch(error => {
-        // 处理错误
-        console.error('发送数据时发生错误:', error);
-      });
+          console.error('发送数据时发生错误:', error);
+        });
     });
   });
 </script>

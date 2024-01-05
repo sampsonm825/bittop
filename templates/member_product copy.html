@@ -252,10 +252,6 @@
       <form @submit.prevent="submitForm">
         <div class="form-control">
           <label for="sell_usdt">USDT数量:</label>
-          <div id="usdtBalance" style="display:none;" data-balance="{{ member_usdt }}"></div>
-
-          <h3>目前USDT可用余额: [[ userUsdtBalance ]]</h3>
-
           <input type="number" name="sell_usdt" placeholder="USDT数量" v-model.number="tempProduct.sell_usdt">
           <div v-if="validationError" class="warning-text">[[ validationError ]]</div>
         </div>
@@ -310,7 +306,7 @@
         bankcards: [],  // 存储银行卡信息
         selectedCardNumber: null,
         usdtRate: null, // USDT汇率
-        userUsdtBalance: 0, // 示例用户USDT余额，应从后端获取
+        userUsdtBalance: 1000, // 示例用户USDT余额，应从后端获取
       }
     },
     computed: {
@@ -368,57 +364,16 @@
       },
       submitForm() {
         if (!this.validationError) {
-          // 准备要发送的数据
-          const formData = {
-            sell_usdt: this.tempProduct.sell_usdt,
-            price: this.usdtRate,
-            total: this.computedTotal,
-            min_limit: this.tempProduct.min_limit,
-            max_limit: this.tempProduct.max_limit,
-            card_number: this.selectedCardNumber,  // 用户在下拉菜单中选择的银行卡号
-
-          };
-
-          // 使用fetch发送数据到后端API
-          fetch('/api/submit_product', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData), // 将JavaScript对象转换为JSON字符串
-          })
-            .then(response => {
-              if (response.ok) {
-                return response.json();
-              } else {
-                throw new Error('Failed to submit product');
-              }
-            })
-            .then(data => {
-              if (data.status === 'success') {
-                // 根据后端返回的重定向 URL 进行页面跳转
-                window.location.href = data.redirect;
-              } else {
-                // 显示错误信息
-                alert(data.message);
-              }
-            })
-            .catch(error => {
-              console.error('Error submitting product:', error);
-              // 在这里处理错误，例如显示错误信息给用户
-            });
-        } else {
-          alert(this.validationError); // 如果验证错误，显示错误信息
+          // 处理表单提交...
+          alert('表单提交成功');
         }
       }
     },
     mounted() {
-      const balanceElement = document.getElementById('usdtBalance');
-      this.userUsdtBalance = balanceElement ? parseFloat(balanceElement.getAttribute('data-balance')) : 0; this.fetchUsdtRate();
+      // Your existing mounted...
+      this.fetchUsdtRate();
     },
     created() {
-      this.userUsdtBalance = /* 设置从后端获取的mUSDT值 */
-
       // 获取当前用户的订单
       fetch('/api/get_my_product_data')
         .then(response => response.json())

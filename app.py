@@ -691,8 +691,27 @@ def check_status():
 @app.route('/admin_log', methods=['GET', 'POST'])
 def admin_log():
     if 'account' in session:
+        # 获取筛选参数
+        account_filter = request.args.get('account')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+
+        # 构建查询条件
+        query = {}
+        if account_filter:
+            query['account'] = account_filter
+
+        # 格式化日期并添加到查询条件（确保数据库中的日期格式匹配）
+        if start_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            query['date'] = {'$gte': start_date}
+        if end_date:
+            end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)  # 将结束日期设置为次日凌晨
+            query['date'] = query.get('date', {})
+            query['date']['$lte'] = end_date
+
         # 从member_usdtlog集合中获取与当前用户相关的记录，并按时间降序排序
-        log_data = list(dbs.member_usdtlog.find({}).sort('uptime', -1))
+        log_data = list(dbs.member_usdtlog.find(query).sort('date', -1))
 
         # 将数据整理为前端所需格式
         record_data = []
@@ -702,15 +721,14 @@ def admin_log():
                 'amount': item.get('usdtcount', 0) if 'usdtcount' in item else item.get('usdtout', 0),
                 'USDT': item.get('USDT', 0),
                 'tradetype': item.get('type', ''),
-                'uptime': item.get('uptime', None)
-
+                'uptime': item.get('uptime', None),
+                'date':item.get('date', None)
             }
             record_data.append(record)
 
         return render_template('admin_log.html', record_data=record_data)
     else:
         return redirect('login')
-
 
 @app.route('/member_log', methods=['GET'])
 def member_log():
@@ -834,22 +852,30 @@ def member_subordinates():
         today = datetime.today()
         start_date = request.args.get('start_date') or today.strftime('%Y-%m-%d')
         end_date = request.args.get('end_date') or today.strftime('%Y-%m-%d')
+        search_account = request.args.get('search_account', '').strip()
+
 
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         end_date = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        if search_account:
+            all_subordinates = [account for account in all_subordinates if search_account.lower() in account.lower()]
 
-        query = {'account': {'$in': all_subordinates}, 'type': '售出', 'date': {'$gte': start_date, '$lt': end_date}}
-        sold_records = list(dbs.member_usdtlog.find(query).sort('date', -1))
+        account_totals = {account: 0 for account in all_subordinates}  # 初始化为0
+        account_usdt = {}  # 存储每个账号的USDT余额
 
-        account_totals = {account: 0 for account in all_subordinates}
-        for record in sold_records:
-            account = record['account']
-            amount = float(record.get('usdtcount', 0))
-            account_totals[account] += amount
-        print(sold_records)
-        print(account_totals)
+        # 获取每个账号的交易记录并更新account_totals
+        for account in all_subordinates:
+            query = {'account': account, 'type': '售出', 'date': {'$gte': start_date, '$lt': end_date}}
+            sold_records = list(dbs.member_usdtlog.find(query).sort('date', -1))
+            for record in sold_records:
+                amount = float(record.get('usdtcount', 0))
+                account_totals[account] += amount
 
-        return render_template('member_subordinates.html', account_totals=account_totals)
+            # 获取每个账号的USDT余额
+            member_data = dbs.bittop_member.find_one({'account': account})
+            account_usdt[account] = member_data.get('USDT', 0) if member_data else 0
+
+        return render_template('member_subordinates.html', account_totals=account_totals, account_usdt=account_usdt)
     else:
         return redirect('login')
 @app.route('/cart/<product>')
@@ -2003,7 +2029,7 @@ def member_product():
 
         # 获取当前用户的USDT信息和cards数组
         member_info = dbs['bittop_member'].find_one({'account': current_account})
-        member_usdt = member_info['USDT'] if member_info else 0
+        member_musdt = member_info.get('mUSDT', 0)
         bankcards = member_info.get('cards', []) if member_info else []
         Taipei_tz = pytz.timezone('Asia/Taipei')
 
@@ -2020,7 +2046,7 @@ def member_product():
             max_limit = request.form.get('max_limit', type=float)
             selected_card_number = request.form.get('banklist')  # 注意这里改为获取银行卡号
 
-            if sell_usdt and sell_usdt <= member_usdt:
+            if sell_usdt and sell_usdt <= member_musdt:
                 # 从用户的cards数组中获取指定的银行卡信息
                 card_info = next((card for card in bankcards if card.get('cardnumber') == selected_card_number), None)
                 if not card_info:
@@ -2039,11 +2065,11 @@ def member_product():
                     'is_buy': 0,
                     'P_bank': f"{card_info['bank']}_{card_info['cardnumber'][-6:]}",
                     'carddocument': card_info,
-                    'USDT': member_usdt - sell_usdt,
+                    'USDT': member_musdt - sell_usdt,
                     'date': today_date  # 更新date字段
 
                 }
-                print(member_usdt - sell_usdt)
+                print(member_musdt - sell_usdt)
 
                 # 创建新订单或更新现有订单
                 order_id = request.form.get('id')
@@ -2064,13 +2090,85 @@ def member_product():
             # 转换每个文档中的ObjectId为字符串
             for product in product_data:
                 product['_id'] = str(product['_id'])
-            return render_template('member_product.html', bankcards=bankcards, member_usdt=member_usdt, product_data=product_data)
+            return render_template('member_product.html', bankcards=bankcards, member_usdt=member_musdt, product_data=product_data)
 
     else:
         return redirect(url_for('member_dashboard'))
 
+@app.route('/api/submit_product', methods=['POST'])
+def submit_product():
+    if 'account' in session:
+        current_account = session['account']
+        
+        # 从请求中获取JSON数据
+        data = request.get_json()
+        
+        # 提取数据字段
+        sell_usdt = data.get('sell_usdt')
+        price = data.get('price')
+        total = data.get('total')
+        min_limit = data.get('min_limit')
+        max_limit = data.get('max_limit')
+        time = data.get('time')  # 从前端发送的时间
+        card_number = data.get('card_number')  # 从前端发送的银行卡号
+        
+        # 从数据库获取当前用户信息和USDT余额
+        # 假设 dbs['bittop_member'] 是你的数据库集合
+        member_info = dbs['bittop_member'].find_one({'account': current_account})
+        member_musdt = member_info['mUSDT'] if member_info else 0
+        card_info = next((card for card in member_info.get('cards', []) if card.get('cardnumber') == card_number), None)
 
+        # 如果卡信息不存在，返回错误
+        if not card_info:
+            return jsonify({'message': '未找到指定的银行卡。', 'status': 'error'}), 400
 
+        # 如果USDT余额不足，返回错误
+        if sell_usdt > member_musdt:
+            return jsonify({'message': 'USDT余额不足。', 'status': 'error'}), 400
+
+        # 构建订单数据
+        new_usdt_balance = member_musdt - sell_usdt  # 更新后的USDT余额
+
+        Taipei_tz = pytz.timezone('Asia/Taipei')
+
+        # 获取当前的详细时间，并转换为不带时区的本地时间
+        now_in_taipei = datetime.now(Taipei_tz)
+        today_date = now_in_taipei.replace(tzinfo=None)  # 不带时区的当前时间
+
+        order_data = {
+            'account': current_account,
+            'sell_usdt': sell_usdt,
+            'price': price,
+            'total': total,
+            'min_limit': min_limit,
+            'max_limit': max_limit,
+            'time':  (datetime.now(Taipei_tz) + timedelta(hours=6)).strftime('%Y-%m-%d %H:%M'),
+            'is_buy': 0,
+            'P_bank': f"{card_info['bank']}_{card_number[-6:]}",
+            'carddocument': card_info,
+            'USDT': new_usdt_balance,
+            'mUSDT':new_usdt_balance,
+            'date': today_date # 更新date字段
+        }
+        insert_result = dbs['member_usdt'].insert_one(order_data)
+        print("Insert result:", insert_result)
+
+        if insert_result.inserted_id: 
+        # 插入或更新订单数据到数据库
+        # 假设 dbs['member_usdt'] 是你的订单数据集合
+                update_result = dbs['bittop_member'].update_one(
+                    {'account': current_account},
+                    {'$set': {'mUSDT': new_usdt_balance}}
+                )
+                print("Update mUSDT result:", update_result)
+
+        # 返回成功响应
+        redirect_url = url_for('member_product')  # 'member_product' 是重定向的端点名
+
+        return jsonify({'message': '产品提交成功', 'status': 'success' ,'redirect': redirect_url})
+    else:
+        # 如果用户未登录，返回错误
+        return jsonify({'message': '用户未登录', 'status': 'error'}), 401
 @app.route('/api/get_bank_cards', methods=['GET'])
 def get_bank_cards():
     if 'account' in session:
@@ -2772,6 +2870,7 @@ def api(name):
 def get_usdt_rate():
     usdt_data = dbs.USDT.find_one()  # 调整为你的实际查询
     usdt_rate = usdt_data['usdt'] if usdt_data else 0
+    print(usdt_rate)
     return jsonify({'usdt': usdt_rate})
 
 

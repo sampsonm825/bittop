@@ -20,6 +20,7 @@
   }
 
   form {
+
     width: 80%;
     margin: 0 auto;
     padding: 10px;
@@ -30,6 +31,7 @@
   }
 
   .form-control input {
+
     width: 100%;
     padding: 8px 10px;
   }
@@ -52,10 +54,15 @@
   }
 
   button[type="submit"] {
+    font-size: 15px;
     background-color: rgb(60, 60, 122);
   }
 
-  
+  input[type="text" i] {
+    font-size: 20px;
+
+
+  }
 </style>
 {% endblock %}
 
@@ -66,14 +73,19 @@
   </div>
 </div>
 <div class="date-filter">
-  <form id="dateFilterForm" method="get" action="/member_subordinates">
+  <form id="filterForm" method="get" action="/member_subordinates">
     <label for="start_date">开始日期:</label>
     <input type="date" id="start_date" name="start_date" required>
 
     <label for="end_date">结束日期:</label>
     <input type="date" id="end_date" name="end_date" required>
 
+    <label for="search_account">搜索账号:</label>
+    <input type="text" id="search_account" name="search_account" placeholder="输入账号">
+
     <button type="submit">筛选</button>
+    <button type="submit" onclick="resetFilters()">清除筛选</button>
+
   </form>
 </div>
 <div class="table-data">
@@ -83,13 +95,15 @@
         <thead>
           <tr>
             <th>账号</th>
-            <th>当日USDT售出总和</th>
+            <th>目前剩餘U量</th>
+            <th>USDT售出总和</th>
           </tr>
         </thead>
         <tbody>
           {% for account, total_sold in account_totals.items() %}
           <tr>
             <td>{{ account }}</td>
+            <td>{{ account_usdt[account] }}</td>  <!-- 显示USDT余额 -->
             <td>{{ total_sold }}</td>
           </tr>
           {% endfor %}
@@ -98,5 +112,16 @@
     </div>
   </div>
 </div>
+<script>
+  function resetFilters() {
+    // 重置所有输入字段
+    document.getElementById('start_date').value = '';
+    document.getElementById('end_date').value = '';
+    document.getElementById('search_account').value = '';
+
+    // 重新加载页面
+    window.location.href = '/member_subordinates';
+  }
+</script>
 
 {% endblock %}
