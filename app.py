@@ -2767,6 +2767,12 @@ def api(name):
     })
   else:
     return redirect(url_for('login'))
+  
+@app.route('/api/get_usdt_rate')
+def get_usdt_rate():
+    usdt_data = dbs.USDT.find_one()  # 调整为你的实际查询
+    usdt_rate = usdt_data['usdt'] if usdt_data else 0
+    return jsonify({'usdt': usdt_rate})
 
 
 if __name__ == "__main__":

@@ -244,7 +244,7 @@
         </div>
         <div class="form-control">
           <label for="price">汇率(单价):</label>
-          <input type="text" name="price" placeholder="汇率(单价)" v-model="tempProduct.price">
+          <input type="text" name="price" placeholder="汇率(单价)" v-model="tempProduct.price || usdtRate">
         </div>
         <div class="form-control">
           <label for="total">总价(CNY):</label>
@@ -264,9 +264,9 @@
           <label for="banklist">银行名称:</label>
           <select id="banklist" name="banklist" v-model="selectedCardNumber">
             <option v-for="card in bankcards" :value="card.cardnumber">
-                [[ card.bank ]]_[[ card.cardnumber.slice(-6) ]]
+              [[ card.bank ]]_[[ card.cardnumber.slice(-6) ]]
             </option>
-        </select>
+          </select>
         </div>
         <div class="button-group">
           <input type="hidden" name="id" v-model="tempProduct._id">
@@ -292,6 +292,8 @@
         modal_title: '',
         bankcards: [],  // 存储银行卡信息
         selectedCardNumber: null,
+        usdtRate: null, // 用于存储从数据库获取的USDT汇率
+
       }
     },
     compilerOptions: {
@@ -311,6 +313,21 @@
         const formattedTime = now.toISOString().slice(0, 19).replace('T', ' ');
         this.tempProduct.bank = formattedTime;
       },
+      fetchUsdtRate() {
+        // 发送请求到后端API以获取USDT汇率
+        fetch('/api/get_usdt_rate').then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to fetch USDT rate');
+          }
+        }).then(data => {
+          this.usdtRate = data.usdt;  // 假设后端返回的数据结构是 {usdt: <汇率>}
+        }).catch(error => {
+          console.error('Error fetching USDT rate:', error);
+        });
+      }
+
     },
     created() {
       // 获取当前用户的订单
@@ -328,6 +345,8 @@
           this.all_product_data = data;
         })
         .catch(error => console.error('Error fetching all product data:', error));
+      this.fetchUsdtRate();
+
     }
   })
   app.mount('#app')
