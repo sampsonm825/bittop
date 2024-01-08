@@ -1917,7 +1917,7 @@ def admin_product():
                     }
                 )
             product_data = []
-            product_find = dbs.member_usdt.find()
+            product_find = dbs.member_usdt.find().sort('date', -1)
             for doc in product_find:
                 doc['_id'] = str(doc['_id'])
                 if doc['is_buy'] == True:
