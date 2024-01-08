@@ -1868,6 +1868,8 @@ def admin_product():
                 max_limit = request.form['max_limit']
                 time = request.form['time']
                 P_bank = request.form['P_bank']
+                is_buy = request.form['is_buy']
+
 
 
 
@@ -1882,7 +1884,8 @@ def admin_product():
                             'time': time,
                             'P_bank':P_bank,
                             'is_buy': False,
-                            'date': today_date  # 新增date字段
+                            'date': today_date,  # 新增date字段
+                            'is_buy': is_buy
 
 
                         }
@@ -1902,7 +1905,8 @@ def admin_product():
                             'P_bank':P_bank,
                             'date': today_date,  # 更新date字段
                             'time': time,
-                            }
+                            'is_buy': is_buy,
+                         }
                         }
                     )
 
@@ -1920,14 +1924,11 @@ def admin_product():
             product_find = dbs.member_usdt.find().sort('date', -1)
             for doc in product_find:
                 doc['_id'] = str(doc['_id'])
-                if doc['is_buy'] == True:
-                    doc['is_buy'] = 1
-                else:
-                    doc['is_buy'] = 0
                 product_data.append(doc)
             return render_template('admin_product.html', product_data=product_data)
     else:
         return redirect('admin_login')
+
 
 @app.route('/api/upload-image', methods=['POST'])
 def upload_image():

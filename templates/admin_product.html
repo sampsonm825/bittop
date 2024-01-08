@@ -266,6 +266,18 @@
   .search-bar button:hover {
     background-color: #0379a0;
   }
+
+  .grey-background {
+    background-color: rgb(180, 180, 180);
+    /* 你可以选择你想要的任何灰色阴影 */
+  }
+
+  .red-bold {
+    color: red;
+    /* 设置文字颜色为红色 */
+    font-weight: bold;
+    /* 设置文字为粗体 */
+  }
 </style>
 {% endblock %}
 
@@ -300,10 +312,14 @@
                 <th>收款银行</th>
 
                 <th>功能</th>
+                <th>回单</th>
+
+                <th>状态</th>
+
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in filtered_data" :key="item._id">
+              <tr v-for="(item, index) in filtered_data" :key="item._id" :class="{'grey-background': item.is_buy === 2}">
                 <td>[[ item.account ]]</td>
                 <td>[[ item.sell_usdt ]]</td>
                 <td>[[ item.price ]]</td>
@@ -311,6 +327,7 @@
                 <td>[[ item.min_limit ]] ~ [[ item.max_limit ]]</td>
                 <td>[[ item.time ]]</td>
                 <td>[[ item.P_bank ]]</td>
+
 
                 <td>
                   <a class="confirm" @click="confirmOrder(item._id)" href="javascript:;">确认</a>
@@ -325,6 +342,8 @@
                     <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail" />
                   </div>
                 </td>
+                <td>[[ item.is_buy ]]</td>
+
 
               </tr>
             </tbody>
@@ -448,6 +467,11 @@
     },
 
   });
+
+  setInterval(function () {
+    // 发起请求到服务器获取最新数据
+    // 更新页面上的数据
+  }, 5000);  // 每5秒请求一次
 
   app.mount('#app');
 </script>
