@@ -210,7 +210,8 @@ body {
 }
 
 #sidebar.hide {
-  width: 60px;
+  display: none;
+
 }
 
 #sidebar .brand {
