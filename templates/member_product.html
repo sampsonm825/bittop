@@ -116,6 +116,26 @@
     background-color: rgb(35, 35, 168);
   }
 
+  @media (max-width: 768px) {
+    table {
+    max-width: 10px; /* 或者任何适合小屏幕的最大宽度 */
+    margin: 0 auto; /* 如果需要，居中显示表格 */
+  }
+    /* 可以给表格的单元格或者内容添加额外的样式以改善可读性 */
+    table td,
+    table th {
+      padding: 5px;
+      /* 减少填充 */
+      font-size: 1em;
+      /* 缩小字体 */
+    }
+  }
+
+  table {
+    width: 20vw;
+    /* 表格宽度为视口宽度的80% */
+  }
+
   table tbody tr td a {
     background-color: #3C91E6;
     padding: 4px 10px;
@@ -184,31 +204,29 @@
             <thead>
               <tr>
                 <th>会员名称</th>
-                <th>USDT数量</th>
-                <th>汇率(单价)</th>
-                <th>总价(CNY)</th>
-                <th>最低单笔限额</th>
-                <th>最高单笔限额</th>
-                <th>自动下架时间</th>
+                <th>USDT数量<br>总价(CNY)</th>
+                <!-- <th>汇率(单价)</th> -->
+                
+                <th>最低单笔限额<br>最高单笔限额</th>
+                <!-- <th>自动下架时间</th>
                 <th>收款银行</th>
-                <th>状态</th>
+                <th>状态</th> -->
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in my_product_data" :key="item._id">
                 <td>[[ item.account ]]</td>
-                <td>[[ item.sell_usdt ]]</td>
-                <td>[[ item.price ]]</td>
-                <td>[[ item.total ]]</td>
-                <td>[[ item.min_limit ]]</td>
-                <td>[[ item.max_limit ]]</td>
-                <td>[[ item.time ]]</td>
+                <td>[[ item.sell_usdt ]]颗<br>[[ item.total ]]</td>
+
+                <!-- <td>[[ item.price ]]</td> -->
+                <td>[[ item.min_limit ]]<br>[[ item.max_limit ]]</td>
+                <!-- <td>[[ item.time ]]</td>
                 <td>[[ item.P_bank ]]</td>
                 <td>
                   <span v-if="item.is_buy === 0">已上架</span>
                   <span v-else-if="item.is_buy === 1">处理中</span>
                   <span v-else-if="item.is_buy === 2">已完成</span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -222,24 +240,22 @@
             <thead>
               <tr>
                 <th>会员账号</th>
-                <th>USDT数量</th>
-                <th>汇率(单价)</th>
-                <th>总价(CNY)</th>
-                <th>最低单笔限额</th>
-                <th>最高单笔限额</th>
-                <th>自动下架时间</th>
+                <th>USDT数量<br>总价(CNY)</th>
+
+                <!-- <th>汇率(单价)</th> -->
+                <th>最低单笔限额<br>最高单笔限额</th>
+                <!-- <th>自动下架时间</th> -->
 
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in all_product_data" :key="item._id">
                 <td>[[ item.account ]]</td>
-                <td>[[ item.sell_usdt ]]</td>
-                <td>[[ item.price ]]</td>
-                <td>[[ item.total ]]</td>
-                <td>[[ item.min_limit ]]</td>
-                <td>[[ item.max_limit ]]</td>
-                <td>[[ item.time ]]</td>
+                <td>[[ item.sell_usdt ]]颗<br>[[ item.total ]]</td>
+
+                <!-- <td>[[ item.price ]]</td> -->
+                <td>[[ item.min_limit ]]<br>[[ item.max_limit ]]</td>
+                <!-- <td>[[ item.time ]]</td> -->
 
               </tr>
             </tbody>
@@ -419,13 +435,13 @@
     created() {
       this.userUsdtBalance = /* 设置从后端获取的mUSDT值 */
 
-      // 获取当前用户的订单
-      fetch('/api/get_my_product_data')
-        .then(response => response.json())
-        .then(data => {
-          this.my_product_data = data;
-        })
-        .catch(error => console.error('Error fetching my product data:', error));
+        // 获取当前用户的订单
+        fetch('/api/get_my_product_data')
+          .then(response => response.json())
+          .then(data => {
+            this.my_product_data = data;
+          })
+          .catch(error => console.error('Error fetching my product data:', error));
 
       // 获取所有订单
       fetch('/api/get-all-product-data')

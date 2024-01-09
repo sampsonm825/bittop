@@ -54,6 +54,11 @@
   button[type="submit"] {
     background-color: rgb(60, 60, 122);
   }
+  @media (max-width: 768px) {
+  table {
+    max-width: 100%; /* 小屏幕上表格宽度可以是100% */
+  }
+}
 
   
 </style>
@@ -89,11 +94,9 @@
         <thead>
           <tr>
             <th>账号</th>
-            <th>变更USDT数量</th>
-            <th>交易类型</th>
-            <th>USDT余额</th>
-            <th>申请时间</th>
-            <th>完成时间</th>
+            <th>变更USDT数量<br>交易类型</th>
+            <th>USDT余额<br>申请时间</th>
+            <!-- <th>完成时间</th> -->
 
           </tr>
         </thead>
@@ -101,11 +104,9 @@
           {% for record in record_data %}
           <tr>
             <td>{{ record.account }}</td>
-            <td>{{ record.amount }}</td>
-            <td>{{ record.tradetype }}</td>
-            <td>{{ record.USDT }}</td>
-            <td>{{ record.time }}</td>
-            <td>{{ record.uptime }}</td>
+            <td>{{ record.amount }}<br>{{ record.tradetype }}</td>
+            <td>{{ record.USDT }}<br>{{ record.time }}</td>
+            <!-- <td>{{ record.uptime }}</td> -->
 
           </tr>
           {% endfor %}

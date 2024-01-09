@@ -4,7 +4,12 @@
 
 {% block style %}
 <style>
- 
+  @media (max-width: 768px) {
+    table {
+      max-width: 100%;
+      /* 小屏幕上表格宽度可以是100% */
+    }
+  }
 
   .edit-modal {
     position: absolute;
@@ -103,7 +108,7 @@
           {% for account, total_sold in account_totals.items() %}
           <tr>
             <td>{{ account }}</td>
-            <td>{{ account_usdt[account] }}</td>  <!-- 显示USDT余额 -->
+            <td>{{ account_usdt[account] }}</td> <!-- 显示USDT余额 -->
             <td>{{ total_sold }}</td>
           </tr>
           {% endfor %}

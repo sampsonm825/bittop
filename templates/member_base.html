@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +12,7 @@
   {% block style %}{% endblock %}
 
 </head>
+
 <body>
   <main>
     <section id="sidebar">
@@ -19,25 +21,30 @@
         <span class="text">BitTOP</span>
       </a>
       <ul class="side-menu ">
-          <li v-for="(item, index) in user_data" :key="item._id">
-            <i class='bx bxl-sketch' style='font-size: 35px;'></i>
-            <span style="font-size: 35px;"class="text">{{ session.account }}<span style="font-size: 16px;"class="text">，欢迎回来</span>
-            
-          </a>
-          <ul class="side-menu">
-            <li id="profile">
-              <a href="/member_dashboard">
-                <i class='bx bxs-notepad'></i>
-                <span class="text">资讯总览</span>
-              </a>
-            </li>
-            <li id="member_product"><a href="/member_product"><i class='bx bxs-food-menu' ></i><span class="text">订单列表</span></a></li>
-            <!-- <li id="admin_product"><a href="/member_card"><i class='bx bx-credit-card' ></i><span class="text">收款卡列表</span></a></li> -->
-            <li id="memberdousdt"><a href="/memberdousdt"><i class='bx bxs-bank' ></i><span class="text">充值/提领</span></a></li>
-            <li id="member_log"><a href="/member_log"><i class='bx bx-paperclip' ></i><span class="text">资产报表</span></a></li>
-            <li id="member_subordinates"><a href="/member_subordinates"><i class='bx bx-paperclip' ></i><span class="text">下级报表</span></a></li>
+        <li v-for="(item, index) in user_data" :key="item._id">
+          <i class='bx bxl-sketch' style='font-size: 35px;'></i>
+          <span style="font-size: 35px;" class="text">{{ session.account }}<span style="font-size: 16px;"
+              class="text">，欢迎回来</span>
 
-          </ul>
+            </a>
+            <ul class="side-menu">
+              <li id="profile">
+                <a href="/member_dashboard">
+                  <i class='bx bxs-notepad'></i>
+                  <span class="text">资讯总览</span>
+                </a>
+              </li>
+              <li id="member_product"><a href="/member_product"><i class='bx bxs-food-menu'></i><span
+                    class="text">订单列表</span></a></li>
+              <!-- <li id="admin_product"><a href="/member_card"><i class='bx bx-credit-card' ></i><span class="text">收款卡列表</span></a></li> -->
+              <li id="memberdousdt"><a href="/memberdousdt"><i class='bx bxs-bank'></i><span
+                    class="text">充值/提领</span></a></li>
+              <li id="member_log"><a href="/member_log"><i class='bx bx-paperclip'></i><span
+                    class="text">资产报表</span></a></li>
+              <li id="member_subordinates"><a href="/member_subordinates"><i class='bx bx-paperclip'></i><span
+                    class="text">下级报表</span></a></li>
+
+            </ul>
         </li>
 
       </ul>
@@ -45,19 +52,19 @@
     <section id="content">
       <!-- NAVBAR -->
       <nav>
-        <i class='bx bx-menu' ></i>
+        <i class='bx bx-menu'></i>
         <div>
           <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
+          <label for="switch-mode" class="switch-mode"></label>
 
-        <a href="member_logout" class="profile">
-          <i class='bx bx-log-out-circle' style='font-size: 35px;'></i>        
-        </a>
+          <a href="member_logout" class="profile">
+            <i class='bx bx-log-out-circle' style='font-size: 35px;'></i>
+          </a>
         </div>
-        
+
       </nav>
       <!-- NAVBAR -->
-  
+
       <!-- MAIN -->
       <main>
         {% block main %}
@@ -98,7 +105,7 @@
 
     const side_menu_title = document.querySelectorAll('.side-menu > li ')
     console.log(side_menu_title)
-    side_menu_title.forEach((item, index)=> {
+    side_menu_title.forEach((item, index) => {
       item.addEventListener('click', function (e) {
         console.log('click')
         const allDropdowns = document.querySelectorAll('.side-menu-dropdown');
@@ -125,10 +132,12 @@
     // TOGGLE SIDEBAR
     const menuBar = document.querySelector('#content nav .bx.bx-menu');
     const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content'); // 获取内容区域元素
 
     menuBar.addEventListener('click', function () {
-      sidebar.classList.toggle('hide');
-    })
+      sidebar.classList.toggle('hide'); // 切换侧边栏的隐藏状态
+      content.classList.toggle('fullwidth'); // 切换内容区域的宽度
+    });
 
 
 
@@ -186,4 +195,5 @@
 
   </script>
 </body>
+
 </html>

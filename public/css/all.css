@@ -347,8 +347,8 @@ body {
 }
 
 #sidebar.hide~#content {
-  width: calc(100% - 60px);
-  left: 60px;
+  width: calc(100% - 0px);
+  left: 0px;
 }
 
 
@@ -378,7 +378,7 @@ body {
 #content nav::before {
   content: '';
   position: absolute;
-  width: 40px;
+  width: 0px;
   height: 40px;
   bottom: -40px;
   left: 0;
@@ -698,7 +698,7 @@ body {
 #content main .table-data>div {
   border-radius: 20px;
   background: var(--light);
-  padding: 24px;
+  padding: 1px;
   overflow-x: auto;
 }
 
@@ -721,7 +721,7 @@ body {
 
 #content main .table-data .order {
   flex-grow: 1;
-  flex-basis: 500px;
+  flex-basis: 450px;
 }
 
 #content main .table-data .order table {
@@ -732,11 +732,11 @@ body {
 
 #content main .table-data .order table th {
   padding-bottom: 12px;
-  font-size: 20px;
+  font-size: 11px;
   text-align: left;
   border-bottom: 1px solid var(--grey);
   text-align: center;
-  width: 150px;
+  width: 10px;
 }
 
 #content main .table-data .order table td {
@@ -840,12 +840,19 @@ body {
   }
 
   #content {
-    width: calc(100% - 60px);
-    left: 200px;
+    width: calc(100% - 200px); /* 假设侧边栏宽度为200px */
+    left: 200px; /* 内容区域离左边的距离，与侧边栏宽度相同 */
+    transition: width 0.3s, left 0.3s; /* 平滑过渡效果 */
   }
-
+  
+  /* 当侧边栏隐藏时的内容区域样式 */
+  #content.fullwidth {
+    width: 100%; /* 内容区域宽度为全屏 */
+    left: 0; /* 内容区域紧贴左边 */
+  }
+  
   #content nav .nav-link {
-    display: none;
+    display: none; /* 如果需要，你可以在这里添加媒体查询来控制小屏幕的显示 */
   }
 }
 

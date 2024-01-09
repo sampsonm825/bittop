@@ -185,6 +185,13 @@
     background-color: rgb(35, 35, 168);
   }
 
+  @media (max-width: 768px) {
+    table {
+      max-width: 100%;
+      /* 小屏幕上表格宽度可以是100% */
+    }
+  }
+
   table tbody tr td a {
     background-color: #3C91E6;
     padding: 4px 10px;
@@ -194,6 +201,12 @@
     transition: opacity .3s;
     display: block;
     margin-bottom: 10px;
+  }
+
+  td,
+  th {
+    padding: 8px;
+    /* 减少这个值会使单元格看起来更紧凑 */
   }
 
   table tbody tr td a.delete {
@@ -282,7 +295,7 @@
 
   /* Modal Content/Box */
   .modal-content {
-    
+
     background-color: #fefefe;
     margin: 15% auto;
     /* 15% from the top and centered */
@@ -436,21 +449,17 @@
           <table>
             <thead>
               <tr>
-                <th>会员名称</th>
-                <th>USDT数量</th>
-                <th>交易码</th>
-                <th>交易完成时间</th>
-                <th>申请时间</th>
+                <th>会员名称<br>USDT数量</th>
+                <!-- <th>交易码</th> -->
+                <th>交易完成时间<br>申请时间</th>
                 <th>功能</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in productData" :key="item._id">
-                <td>[[ item.account ]]</td>
-                <td>[[ item.usdtcount ]]</td>
-                <td>[[ item.tradecode ]]</td>
-                <td>[[ item.tradetime ]]</td>
-                <td>[[ item.time ]]</td>
+                <td>[[ item.account ]]<br>[[ item.usdtcount ]]</td>
+                <!-- <td>[[ item.tradecode ]]</td> -->
+                <td>[[ item.tradetime ]]<br>[[ item.time ]]</td>
                 <td>
                   <span v-if="item.status">已处理</span>
                   <span v-else>处理中</span>
@@ -517,19 +526,15 @@
           <table>
             <thead>
               <tr>
-                <th>会员名称</th>
-                <th>提领USDT数量</th>
-                <th>申请地址</th>
-                <th>申请时间</th>
+                <th>会员名称<br>提领USDT数量</th>
+                <th>申请地址<br>申请时间</th>
                 <th>功能</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in withdrawData" :key="item._id">
-                <td>[[ item.account ]]</td>
-                <td>[[ item.usdtout ]]</td>
-                <td>[[ item.usdtaddress ]]</td>
-                <td>[[ item.time ]]</td>
+                <td>[[ item.account ]]<br>[[ item.usdtout ]]</td>
+                <td>[[ item.usdtaddress ]]<br>[[ item.time ]]</td>
                 <td>
                   <span v-if="item.status">已处理</span>
                   <span v-else>处理中</span>
