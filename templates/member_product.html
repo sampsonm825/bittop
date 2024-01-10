@@ -160,7 +160,7 @@
   a.add_btn {
     text-decoration: none;
     display: block;
-    width: 20%;
+    width: 30%;
     color: #000000;
     font-size: 16px;
     font-weight: bolder;
@@ -187,6 +187,17 @@
   .left-aligned {
     text-align: left;
     /* 将文本左对齐 */
+  }
+
+  td hr {
+    border: 0;
+    /* 移除默认边框 */
+    height: 1px;
+    /* 设置分隔线的高度 */
+    background-color: #ccc;
+    /* 设置分隔线的颜色 */
+    margin: 10px 0;
+    /* 上下间距 */
   }
 
   [v-cloak] {
@@ -223,11 +234,12 @@
             <tbody>
               <tr v-for="(item, index) in my_product_data" :key="item._id">
                 <td style="text-align: left;">
-                  会员名称: [[ item.account ]]<br>
-                  USDT: [[ item.sell_usdt ]] U<br>
-                  总价(CNY): [[ item.total ]]<br>
-                  最低单笔限额: [[ item.min_limit ]]<br>
-                  最高单笔限额: [[ item.max_limit ]]
+                  <span style="font-weight: bold; color: rgb(253, 118, 40);">会员名称: [[ item.account ]]</span><br>
+                  [[ item.sell_usdt ]] USDT<br>
+                  单笔订单总价　:　 [[ item.total ]](CNY)<br>
+                  最低单笔限额　:　 [[ item.min_limit ]]<br>
+                  最高单笔限额　:　 [[ item.max_limit ]]
+                  <hr>
                 </td>
                 <!-- <td>[[ item.price ]]</td> -->
                 <!-- <td>[[ item.time ]]</td>
@@ -252,20 +264,21 @@
                 <th>会员账号</th>
                 <th>USDT数量<br>总价(CNY)</th> -->
 
-                <!-- <th>汇率(单价)</th> -->
-                <!-- <th>最低单笔限额<br>最高单笔限额</th> -->
-                <!-- <th>自动下架时间</th> -->
+            <!-- <th>汇率(单价)</th> -->
+            <!-- <th>最低单笔限额<br>最高单笔限额</th> -->
+            <!-- <th>自动下架时间</th> -->
 
-              <!-- </tr>
+            <!-- </tr>
             </thead> -->
             <tbody>
               <tr v-for="(item, index) in all_product_data" :key="item._id">
                 <td style="text-align: left;">
-                  会员名称: [[ item.account ]]<br>
-                  USDT: [[ item.sell_usdt ]] U<br>
+                  <span style="font-weight: bold; color: rgb(253, 118, 40);">会员名称: [[ item.account ]]</span><br>
+                  [[ item.sell_usdt ]] USDT<br>
                   总价(CNY): [[ item.total ]]<br>
                   最低单笔限额: [[ item.min_limit ]]<br>
-                  最高单笔限额: [[ item.max_limit ]]
+                  最高单笔限额: [[ item.max_limit ]]<br>
+                  <hr>
                 </td>
               </tr>
             </tbody>
