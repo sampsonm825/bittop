@@ -96,19 +96,19 @@
   <div class="order">
     <div class="scroll-table">
       <table>
-        <thead>
+        <!-- <thead>
           <tr>
             <th>账号</th>
             <th>目前剩餘U量</th>
             <th>USDT售出总和</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody> -->
           {% for account, total_sold in account_totals.items() %}
           <tr>
-            <td>{{ account }}</td>
-            <td>{{ account_usdt[account] }}</td> <!-- 显示USDT余额 -->
-            <td>{{ total_sold }}</td>
+            <td style="text-align: left;">账号:{{ account }}<br>
+            余额{{ account_usdt[account] }}<br> <!-- 显示USDT余额 -->
+            USDT售出总和{{ total_sold }}</td>
           </tr>
           {% endfor %}
         </tbody>

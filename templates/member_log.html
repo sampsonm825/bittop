@@ -91,21 +91,23 @@
   <div class="order">
     <div class="scroll-table">
       <table>
-        <thead>
+        <!-- <thead>
           <tr>
             <th>账号</th>
             <th>变更USDT数量<br>交易类型</th>
-            <th>USDT余额<br>申请时间</th>
+            <th>USDT余额<br>申请时间</th> -->
             <!-- <th>完成时间</th> -->
 
-          </tr>
-        </thead>
+          <!-- </tr> -->
+        <!-- </thead> -->
         <tbody>
           {% for record in record_data %}
           <tr>
-            <td>{{ record.account }}</td>
-            <td>{{ record.amount }}<br>{{ record.tradetype }}</td>
-            <td>{{ record.USDT }}<br>{{ record.time }}</td>
+            <td style="text-align: left;">
+              账号:{{ record.account }}<br>
+              {{ record.tradetype }}:{{ record.amount }}<br>
+              余额:{{ record.USDT }}<br>完成时间:{{ record.time }}
+            </td>
             <!-- <td>{{ record.uptime }}</td> -->
 
           </tr>

@@ -80,7 +80,7 @@
   td a {
     display: block;
     margin: 0 auto;
-    width:50%;
+    width: 50%;
   }
 
   td a:first-child {
@@ -116,19 +116,22 @@
     background-color: rgb(35, 35, 168);
   }
 
-    table {
-    width: 100%; /* 或者任何适合小屏幕的最大宽度 */
-    margin: 0 auto; /* 如果需要，居中显示表格 */
+  table {
+    width: 100%;
+    /* 或者任何适合小屏幕的最大宽度 */
+    margin: 0 auto;
+    /* 如果需要，居中显示表格 */
   }
-    /* 可以给表格的单元格或者内容添加额外的样式以改善可读性 */
-    table td,
-    table th {
-      padding: 5px;
-      /* 减少填充 */
-      font-size: 1em;
-      /* 缩小字体 */
-    }
-  
+
+  /* 可以给表格的单元格或者内容添加额外的样式以改善可读性 */
+  table td,
+  table th {
+    padding: 5px;
+    /* 减少填充 */
+    font-size: 1em;
+    /* 缩小字体 */
+  }
+
 
   table {
     width: 20vw;
@@ -181,6 +184,11 @@
     font-size: 12px;
   }
 
+  .left-aligned {
+    text-align: left;
+    /* 将文本左对齐 */
+  }
+
   [v-cloak] {
     display: none !important;
   }
@@ -196,29 +204,32 @@
   </div>
   <div class="product">
     <a @click="modalControl(true, '新增'), tempProduct = {}" class="open add_btn" href="javascript:;">新增订单</a>
-    <div class="table-data"style="width: 300px;">
+    <div class="table-data" style="width: 300px;">
       <div class="order">
-        <div class="scroll-table" >
+        <div class="scroll-table">
           <table>
-            <thead>
+            <!-- <thead>
               <tr>
                 <th>会员名称</th>
-                <th>USDT数量<br>总价(CNY)</th>
-                <!-- <th>汇率(单价)</th> -->
-                
-                <th>最低单笔限额<br>最高单笔限额</th>
-                <!-- <th>自动下架时间</th>
+                <th>USDT数量<br>总价(CNY)</th> -->
+            <!-- <th>汇率(单价)</th> -->
+
+            <!-- <th>最低单笔限额<br>最高单笔限额</th> -->
+            <!-- <th>自动下架时间</th>
                 <th>收款银行</th>
                 <th>状态</th> -->
-              </tr>
-            </thead>
+            <!-- </tr>
+            </thead> -->
             <tbody>
               <tr v-for="(item, index) in my_product_data" :key="item._id">
-                <td>[[ item.account ]]</td>
-                <td>[[ item.sell_usdt ]] U<br>[[ item.total ]]</td>
-
+                <td style="text-align: left;">
+                  会员名称: [[ item.account ]]<br>
+                  USDT: [[ item.sell_usdt ]] U<br>
+                  总价(CNY): [[ item.total ]]<br>
+                  最低单笔限额: [[ item.min_limit ]]<br>
+                  最高单笔限额: [[ item.max_limit ]]
+                </td>
                 <!-- <td>[[ item.price ]]</td> -->
-                <td>[[ item.min_limit ]]<br>[[ item.max_limit ]]</td>
                 <!-- <td>[[ item.time ]]</td>
                 <td>[[ item.P_bank ]]</td>
                 <td>
@@ -236,26 +247,26 @@
       <div class="order">
         <div class="scroll-table">
           <table>
-            <thead>
+            <!-- <thead>
               <tr>
                 <th>会员账号</th>
-                <th>USDT数量<br>总价(CNY)</th>
+                <th>USDT数量<br>总价(CNY)</th> -->
 
                 <!-- <th>汇率(单价)</th> -->
-                <th>最低单笔限额<br>最高单笔限额</th>
+                <!-- <th>最低单笔限额<br>最高单笔限额</th> -->
                 <!-- <th>自动下架时间</th> -->
 
-              </tr>
-            </thead>
+              <!-- </tr>
+            </thead> -->
             <tbody>
               <tr v-for="(item, index) in all_product_data" :key="item._id">
-                <td>[[ item.account ]]</td>
-                <td>[[ item.sell_usdt ]] U<br>[[ item.total ]]</td>
- 
-                <!-- <td>[[ item.price ]]</td> -->
-                <td>[[ item.min_limit ]]<br>[[ item.max_limit ]]</td>
-                <!-- <td>[[ item.time ]]</td> -->
-
+                <td style="text-align: left;">
+                  会员名称: [[ item.account ]]<br>
+                  USDT: [[ item.sell_usdt ]] U<br>
+                  总价(CNY): [[ item.total ]]<br>
+                  最低单笔限额: [[ item.min_limit ]]<br>
+                  最高单笔限额: [[ item.max_limit ]]
+                </td>
               </tr>
             </tbody>
           </table>
