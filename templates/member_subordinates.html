@@ -67,6 +67,16 @@
 
 
   }
+  td hr {
+    border: 0;
+    /* 移除默认边框 */
+    height: 1px;
+    /* 设置分隔线的高度 */
+    background-color: #ccc;
+    /* 设置分隔线的颜色 */
+    margin: 10px 0;
+    /* 上下间距 */
+  }
 </style>
 {% endblock %}
 
@@ -92,7 +102,7 @@
 
   </form>
 </div>
-<div class="table-data">
+<div class="table-data" style="width: 100%;">
   <div class="order">
     <div class="scroll-table">
       <table>
@@ -106,9 +116,12 @@
         <tbody> -->
           {% for account, total_sold in account_totals.items() %}
           <tr>
-            <td style="text-align: left;">账号:{{ account }}<br>
-            余额{{ account_usdt[account] }}<br> <!-- 显示USDT余额 -->
-            USDT售出总和{{ total_sold }}</td>
+            <td style="text-align: left;">
+              <span style="font-weight: bold; color: rgb(253, 118, 40);">会员名称: [[ item.account ]]</span><br>
+              余额 {{ account_usdt[account] }} USDT<br> <!-- 显示USDT余额 -->
+              售出 {{ total_sold }} USDT</td>
+              <hr>
+
           </tr>
           {% endfor %}
         </tbody>
