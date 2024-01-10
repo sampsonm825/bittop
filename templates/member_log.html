@@ -114,7 +114,7 @@ td hr {
           {% for record in record_data %}
           <tr>
             <td style="text-align: left;">
-              <span style="font-weight: bold; color: rgb(253, 118, 40);">账号: [[ item.account ]]</span><br>
+              <span style="font-weight: bold; color: rgb(253, 118, 40);">账号 : {{ record.account }}</span><br>
               {{ record.tradetype }} : {{ record.amount }}<br>
               余额 : {{ record.USDT }}<br>完成时间 : {{ record.time }}
             </td>
