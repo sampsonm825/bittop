@@ -416,6 +416,8 @@
     <a @click="modalControl(true, '新增'), tempProduct = {}" class="open add_btn" href="javascript:;">新增充值订单</a>
     <div class="add-modal" v-if="is_modal">
       <!-- 表单内容 -->
+      <span class="close">&times;</span>
+
       <form @submit.prevent="submitForm">
 
         <div class="form-control">
