@@ -768,7 +768,7 @@ body {
   padding: 6px 16px;
   color: var(--light);
   border-radius: 20px;
-  font-weight: 10;
+  font-weight: 700;
 }
 
 #content main .table-data .order table tr td .status.completed {

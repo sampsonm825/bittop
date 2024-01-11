@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" href="/css/all.css">
@@ -54,7 +53,8 @@
     <section id="content">
       <!-- NAVBAR -->
       <nav>
-        <i class='bx bx-menu'></i>
+        <i class='bx bx-menu'>选单</i>
+        <span class="text" style="font-size: 30px;color: rgb(101, 214, 214);" face="Georgia"><strong>BitTOP</strong></span>
         <div>
           <input type="checkbox" id="switch-mode" hidden>
           <label for="switch-mode" class="switch-mode"></label>
@@ -132,15 +132,30 @@
 
 
     // TOGGLE SIDEBAR
-    const menuBar = document.querySelector('#content nav .bx.bx-menu');
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content'); // 获取内容区域元素
+    document.addEventListener('DOMContentLoaded', function () {
+      const sidebar = document.getElementById('sidebar');
+      const menuBar = document.querySelector('#content nav .bx.bx-menu');
+      const sideMenuItems = document.querySelectorAll('.side-menu > li');
 
-    menuBar.addEventListener('click', function () {
-      sidebar.classList.toggle('hide'); // 切换侧边栏的隐藏状态
-      content.classList.toggle('fullwidth'); // 切换内容区域的宽度
+      // 初始隐藏侧边栏
+      sidebar.classList.add('hide');
+
+      // 切换侧边栏显示/隐藏
+      menuBar.addEventListener('click', function () {
+        sidebar.classList.toggle('hide');
+      });
+
+      // 为每个菜单项添加点击事件
+      sideMenuItems.forEach(item => {
+        item.addEventListener('click', function () {
+          // 在小屏幕上点击任何菜单项后隐藏侧边栏
+          if (window.innerWidth < 768) {
+            sidebar.classList.add('hide');
+          }
+          // 其他代码...
+        });
+      });
     });
-
 
 
 
