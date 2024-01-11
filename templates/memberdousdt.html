@@ -48,14 +48,14 @@
     /* 显示模态窗口 */
     position: fixed;
     /* 固定定位 */
-    top: 60%;
+    top: 70%;
     /* 居中定位 */
     left: 50%;
     transform: translate(-50%, -50%);
     /* 从中心向上和向左偏移 */
-    width: 80%;
+    width: 100%;
     /* 宽度 */
-    height: 60%;
+    height: 70%;
     /* 高度自动 */
     background-color: #fff;
     /* 背景色 */
@@ -511,6 +511,7 @@
       href="javascript:;">新增提领申请</a>
     <div v-if="is_modal_withdraw" class="add-modal">
       <form @submit.prevent="submitWithdrawForm">
+        <span class="close">&times;</span>
 
         <div class="form-control">
           <label for="currency">货币:</label>
