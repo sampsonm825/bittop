@@ -319,7 +319,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in filtered_data" :key="item._id" :class="{'grey-background': item.is_buy === 2}">
+              <tr v-for="(item, index) in filtered_data" :key="item._id"
+                :class="{'grey-background': item.is_buy === 2}">
                 <td>[[ item.account ]]</td>
                 <td>[[ item.sell_usdt ]]</td>
                 <td>[[ item.price ]]</td>
@@ -414,8 +415,23 @@
         this.tempProduct.factory_bank = now.toISOString().slice(0, 19).replace('T', ' ');
       },
       copyToClipboard(carddocument, total) {
-        const cardInfo = Object.entries(carddocument).map(([key, value]) => `${key}: ${value}`).join('\n');
-        const textToCopy = `Card Info:\n${cardInfo}\nTotal: ${total}`;
+        // 将字段名称从英文映射到中文
+        const fieldMap = {
+          accountname: '姓名',
+          bank: '银行',
+          bankprovince: '银行省份',
+          branch: '支行',
+          cardnumber: '卡号'
+          // 不包含 card_id 字段
+        };
+
+        // 使用映射和过滤来创建新的信息字符串
+        const cardInfo = Object.entries(carddocument)
+          .filter(([key]) => fieldMap[key]) // 过滤掉不需要的字段
+          .map(([key, value]) => `${fieldMap[key]}: ${value}`)
+          .join('\n');
+
+        const textToCopy = `${cardInfo}\n金额: ${total}`;
         navigator.clipboard.writeText(textToCopy).then(() => {
           alert('复制成功！');
         }, (err) => {

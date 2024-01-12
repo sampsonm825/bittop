@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,6 +13,7 @@
     margin: 0;
     box-sizing: border-box;
   }
+
   h1 {
     font-weight: bold;
     font-size: 32px;
@@ -20,6 +22,7 @@
     margin-top: 30px;
     margin-bottom: 30px;
   }
+
   h2 {
     font-weight: bold;
     font-size: 25px;
@@ -28,6 +31,7 @@
     margin-top: 30px;
     margin-bottom: 30px;
   }
+
   .register {
     display: flex;
     justify-content: center;
@@ -36,104 +40,118 @@
     padding: 10px 60px;
     box-shadow: 0 0 8px 0 rgb(0, 0, 0, 6%), 0 1px 0 0 rgb(0, 0, 0, 2%);
     border: 1px solid rgba(54, 64, 74, .1)
-    
   }
+
   form {
     width: 400px;
     margin: 0 auto;
   }
+
   .form-control {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    font-weight:bold;
+    font-weight: bold;
     font-size: 20px;
 
 
   }
 
- 
+
   .form-control label {
     padding-right: 15px;
     width: 35%;
     white-space: nowrap;
     text-align: right;
   }
+
   .form-control input {
     padding: 8px;
     flex: 1 0 auto;
   }
+
   .button-group {
     display: flex;
-    color: black; /* 这里使用 'initial' 来保持原始颜色，您也可以指定一个具体的颜色 */
-    text-decoration: none; /* 移除下划线 */
+    color: black;
+    /* 这里使用 'initial' 来保持原始颜色，您也可以指定一个具体的颜色 */
+    text-decoration: none;
+    /* 移除下划线 */
 
   }
+
   .button-group button {
     margin-left: auto;
     margin-right: 0;
     padding: 4px;
-    font-weight:bold;
-    color: black; /* 这里使用 'initial' 来保持原始颜色，您也可以指定一个具体的颜色 */
-    text-decoration: none; /* 移除下划线 */
+    font-weight: bold;
+    color: black;
+    /* 这里使用 'initial' 来保持原始颜色，您也可以指定一个具体的颜色 */
+    text-decoration: none;
+    /* 移除下划线 */
     outline: none;
   }
-    body {
+
+  body {
     background-image: url('/image/USDT.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-position: center; /* 或者使用百分比，如 '50% 50%' */
-}
-
-
+    background-position: center;
+    /* 或者使用百分比，如 '50% 50%' */
+  }
 </style>
+
 <body>
 
   <div class="register">
 
-      <form action="/register" method="POST" enctype='multipart/form-data'>
-        <h1>会员注册</h1>
-        <h2>资料内容仅供BitTop使用</h2>
-        <div class="form-control" style="text-align: center;">
-          <label for="display_name" style="font-size: 30px; font-weight: bold;">一般会员</label>
-          <input type="hidden" name="display_name" value="一般会员">
-        </div>
-        <div class="form-control">
-          <label for="account">账号:</label>
-          <input type="text" name="account" id="account" placeholder="账号登入使用请自行保管">
-        </div>
-        <div class="form-control">
-          <label for="password">密码:</label>
-          <input type="password" name="password" id="password" placeholder="密码请妥善保存">
-        </div>
-        <div class="form-control">
-          <label for="password">确认密码:</label>
-          <input type="password" name="resetPassword" id="resetPassword" placeholder="请再次输入相同密码">
-        </div>
-        <div class="form-control">
-          <label for="password2">密保:</label>
-          <input type="password2" name="password2" id="password2" placeholder="设置6~12位英数字密保，请妥善保存">
-        </div>
-        <div class="form-control">
-          <label for="name">真实姓名:</label>
-          <input type="text" name="name" id="name" placeholder="打款对照真实姓名，请留意是否有错字">
-        </div>
->
-        <div class="form-control">
-          <label for="invitedCode">介绍人:</label>
-          <input type="text" name="invitedCode" id="invitedCode" placeholder="直接填入介绍人账号">
-        </div>
-
-        <div class="button-group">
-          <button type="submit" class="no-color-change"><a href="/rule1">使用者条款</a></button>
-          <button type="submit" class="no-color-change"><a href="/rule2">隐私权政策</a></button>
-          <button type="submit">送出</button>
-          <button type="submit" class="no-color-change"><a href="/login">返回</a></button>
-        </div>
-      </form>
+    <form id="registrationForm" action="/register" method="POST" enctype='multipart/form-data'>
+      <h1>会员注册</h1>
+      <h2>资料内容仅供BitTop使用</h2>
+      <div class="form-control" style="text-align: center;">
+        <label for="display_name" style="font-size: 30px; font-weight: bold;">一般会员</label>
+        <input type="hidden" name="display_name" value="一般会员">
+      </div>
+      <div class="form-control">
+        <label for="account">账号:</label>
+        <input type="text" name="account" id="account" placeholder="账号登入使用请自行保管"><br>
 
       </div>
+      <p id="account-error" style="color: red; display: none; font-size: 16px;">账号不能包含空白键或特殊符号</span>
+
+      <div class="form-control">
+        <label for="password">密码:</label>
+        <input type="password" name="password" id="password" placeholder="密码请妥善保存">
+      </div>
+      <div class="form-control">
+        <label for="password">确认密码:</label>
+        <input type="password" name="resetPassword" id="resetPassword" placeholder="请再次输入相同密码">
+      </div>
+      <div class="form-control">
+        <label for="password2">密保:</label>
+        <input type="password2" name="password2" id="password2" placeholder="设置6~12位英数字密保，请妥善保存">
+      </div>
+      <div class="form-control">
+        <label for="name">真实姓名:</label>
+        <input type="text" name="name" id="name" placeholder="打款对照真实姓名，请留意是否有错字">
+      </div>
+      >
+      <div class="form-control">
+        <label for="invitedCode">介绍人:</label>
+        <input type="text" name="invitedCode" id="invitedCode" placeholder="直接填入介绍人账号">
+        <br>
+        <span id="invitedCode-error" style="color: red; display: none; font-size: 16px;">介绍人不能为空</span>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" class="no-color-change"><a href="/rule1">使用者条款</a></button>
+        <button type="submit" class="no-color-change"><a href="/rule2">隐私权政策</a></button>
+        <button type="submit">送出</button>
+        <button type="submit" class="no-color-change"><a href="/login">返回</a></button>
+      </div>
+    </form>
+
+  </div>
   </div>
 </body>
 <script>
@@ -142,7 +160,7 @@
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
+      results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
@@ -157,6 +175,36 @@
     if (inviteCode) {
       document.getElementById('invitedCode').value = inviteCode;
     }
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+      var accountInput = document.getElementById('account');
+      var invitedCodeInput = document.getElementById('invitedCode');
+      var accountErrorSpan = document.getElementById('account-error');
+      var invitedCodeErrorSpan = document.getElementById('invitedCode-error');
+
+      var isFormValid = true;
+
+      // 检查账号是否含有空白键或特殊符号
+      if (/[\s\W]/.test(accountInput.value)) {
+        accountErrorSpan.style.display = 'inline';
+        isFormValid = false;
+      } else {
+        accountErrorSpan.style.display = 'none';
+      }
+
+      // 检查介绍人是否为空
+      if (!invitedCodeInput.value.trim()) {
+        invitedCodeErrorSpan.style.display = 'inline';
+        isFormValid = false;
+      } else {
+        invitedCodeErrorSpan.style.display = 'none';
+      }
+
+      // 如果表单不合法，则阻止提交
+      if (!isFormValid) {
+        e.preventDefault();
+      }
+    });
   });
 </script>
+
 </html>
