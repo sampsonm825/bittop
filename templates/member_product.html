@@ -102,6 +102,19 @@
     align-items: center;
   }
 
+  .modal-overlay {
+    position: fixed;
+    /* 固定位置，确保覆盖整个屏幕 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 半透明背景 */
+    z-index: 10;
+    /* 确保它位于页面内容之上 */
+  }
+
   .page a {
     color: white;
     width: 3%;
@@ -286,13 +299,15 @@
         </div>
       </div>
     </div>
+    <div v-if="is_modal" class="modal-overlay" @click="closeModal"></div>
+
     <div v-show="is_modal" class="add-modal">
-            <span class="close" @click="closeModal">&times;</span>
+      <span class="close" @click="closeModal">&times;</span>
 
       <h2>[[ modal_title ]]订单</h2>
 
       <form @submit.prevent="submitForm">
-        
+
         <div class="form-control">
           <label for="sell_usdt">USDT数量:</label>
           <div id="usdtBalance" style="display:none;" data-balance="{{ member_usdt }}"></div>

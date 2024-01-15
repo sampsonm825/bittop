@@ -691,6 +691,8 @@
       },
 
       modalControl(type, fun) {
+        document.getElementById('modal-overlay').style.display = type ? 'block' : 'none';
+
         this.is_modal = type;
         this.modal_title = fun;
         if (type && fun === '新增') {
