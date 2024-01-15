@@ -55,7 +55,7 @@
     /* 从中心向上和向左偏移 */
     width: 100%;
     /* 宽度 */
-    height: 70%;
+    height: 90%;
     /* 高度自动 */
     background-color: #fff;
     /* 背景色 */
@@ -623,6 +623,18 @@
     },
 
     methods: {
+      copyAddress() {
+        // 获取要复制的地址
+        const address = document.getElementById('walletAddress').innerText;
+        // 创建一个临时的input元素，用于复制文本
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = address;
+        tempInput.select();  // 选择文本
+        document.execCommand('copy');  // 执行复制命令
+        document.body.removeChild(tempInput);  // 移除临时元素
+        alert('地址已复制到剪贴板');  // 反馈给用户
+      },
       closeModal() {
         this.is_modal = false;
         this.is_modal_withdraw = false;
@@ -713,18 +725,7 @@
       // 其余代码...
     },
 
-    copyAddress() {
-      // 获取要复制的地址
-      const address = document.getElementById('walletAddress').innerText;
-      // 创建一个临时的input元素，用于复制文本
-      const tempInput = document.createElement('input');
-      document.body.appendChild(tempInput);
-      tempInput.value = address;
-      tempInput.select();  // 选择文本
-      document.execCommand('copy');  // 执行复制命令
-      document.body.removeChild(tempInput);  // 移除临时元素
-      alert('地址已复制到剪贴板');  // 反馈给用户
-    },
+
 
   })
   app.mount('#app')

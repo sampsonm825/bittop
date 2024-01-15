@@ -31,7 +31,7 @@
     display: block;
     position: absolute;
     width: 100%;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 15px;
@@ -287,8 +287,12 @@
       </div>
     </div>
     <div v-show="is_modal" class="add-modal">
+            <span class="close" @click="closeModal">&times;</span>
+
       <h2>[[ modal_title ]]订单</h2>
+
       <form @submit.prevent="submitForm">
+        
         <div class="form-control">
           <label for="sell_usdt">USDT数量:</label>
           <div id="usdtBalance" style="display:none;" data-balance="{{ member_usdt }}"></div>
@@ -379,6 +383,9 @@
       delimiters: ["[[", "]]"]
     },
     methods: {
+      closeModal() {
+        this.is_modal = false;
+      },
       modalControl(type, fun) {
         type ? this.is_modal = true : this.is_modal = false
         this.modal_title = fun
