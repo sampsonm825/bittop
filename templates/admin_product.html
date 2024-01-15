@@ -4,6 +4,21 @@
 
 {% block style %}
 <style>
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+  }
+
+  .modal img {
+    width: 90%;
+    /* 或其他大小 */
+    height: auto;
+    cursor: pointer;
+  }
+
   button {
     background: none;
     border: 0;
@@ -312,6 +327,7 @@
                 <th>收款银行</th>
 
                 <th>功能</th>
+                <th>上传回单</th>
                 <th>回单</th>
 
                 <th>状态</th>
@@ -340,7 +356,14 @@
                 <td>
                   <div class="button-container">
                     <input type="file" @change="uploadImage($event, item._id)" />
-                    <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail" />
+                    <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail"
+                      @click="showModal(item.thumbnail)" />
+                  </div>
+                </td>
+                <td>
+                  <div v-if="is_modal" class="modal">
+                    <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail"
+                      @click="showModal(item.thumbnail)" />
                   </div>
                 </td>
                 <td>[[ item.is_buy ]]</td>
@@ -366,6 +389,7 @@
         modal_title: '',
         my_product_data: [],
         searchQuery: '',  // 绑定到搜索框的数据
+        modal_image: '',
       }
     },
     compilerOptions: {
@@ -453,26 +477,40 @@
       uploadImage(event, id) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
-          // 创建表单数据
           const formData = new FormData();
           formData.append('image', file);
           formData.append('id', id);
 
-          // 发送到服务器 (假设你有一个用于处理图片上传的API)
           fetch('/api/upload-image', {
             method: 'POST',
             body: formData
           })
-            .then(response => response.json())
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('网络响应不是OK');
+              }
+              return response.json();
+            })
             .then(data => {
-              console.log('上传成功:', data);
-              // 可能需要更新本地数据来反映图片的上传
+              this.updateThumbnail(id, data.image_url);
             })
             .catch(error => {
               console.error('上传错误:', error);
             });
         }
       },
+      showModal(imageUrl) {
+        this.modal_image = imageUrl;
+        this.is_modal = true;
+      },
+      updateThumbnail(id, url) {
+        const product = this.product_data.find(p => p._id === id);
+        if (product) {
+          product.thumbnail = url;
+          this.$forceUpdate();
+        }
+      },
+
     },
     created() {
       this.product_data = JSON.parse('{{ product_data | tojson | safe }}');
@@ -480,6 +518,7 @@
 
       // 假设 Flask 正确地传递了 product_data
       this.product_data = JSON.parse('{{ product_data | tojson | safe }}');
+
     },
 
   });

@@ -1932,26 +1932,29 @@ def admin_product():
 
 @app.route('/api/upload-image', methods=['POST'])
 def upload_image():
-    image = request.files['image']
-    order_id = request.form['id']
+    try:
+        image = request.files['image']
+        order_id = request.form['id']
 
-    if image and order_id:
-        # 确保上传文件夹存在
-        if not os.path.exists(app.config['/image']):
-            os.makedirs(app.config['/image'])
+        if image and order_id:
+            upload_folder = '/path/to/upload/folder' # 此处应该是您的实际存储路径
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
 
-        # 保存图片到服务器文件系统
-        filename = secure_filename(image.filename)
-        path = os.path.join(app.config['/image'], filename)
-        image.save(path)
+            filename = secure_filename(image.filename)
+            path = os.path.join(upload_folder, filename)
+            image.save(path)
 
         # 更新数据库记录
-        image_url = url_for('static', filename=os.path.join('path/to/save/images', filename))
-        dbs.member_usdt.update_one({'_id': ObjectId(order_id)}, {'$set': {'image_url': image_url}})
+            image_url = url_for('static', filename=os.path.join('path/to/save/images', filename))
+            dbs.member_usdt.update_one({'_id': ObjectId(order_id)}, {'$set': {'image_url': image_url}})
+            return jsonify({'status': 'success', 'image_url': image_url})
 
-        return jsonify({'status': 'success', 'image_url': image_url})
+        return jsonify({'status': 'error', 'message': 'Invalid data'})
+    except Exception as e:
+        print(e)  # 打印异常信息，便于调试
+        return jsonify({'status': 'error', 'message': 'An error occurred'})
 
-    return jsonify({'status': 'error', 'message': 'Invalid data'})
 @app.route('/confirm_order/<order_id>', methods=['POST'])
 def confirm_order(order_id):
     try:
