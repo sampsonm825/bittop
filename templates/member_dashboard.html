@@ -101,12 +101,12 @@
     /* 垂直居中，你可以调整这个百分比来上下移动模态窗口 */
     padding: 10px;
     border: 1px solid #888;
-    width: 80%;
+    width: 100%;
     /* 根据需要调整宽度，例如 50% */
     /* 新添加的样式 */
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    left: 30%;
+
     /* 给模态窗口添加圆角 */
     position: relative;
     /* 为关闭按钮定位 */
@@ -295,7 +295,7 @@
             <div class="form-control">
               <label for="address">钱包地址:</label>
               <p id="walletAddress" style="font-size: 12px;">TMUw65KFv5rbnfSGMKEufxvHwonLLc9vQW</p>
-              <button onclick="copyAddress()">复制地址</button>
+              <button onclick="copyAddress()">复制</button>
             </div>
             <div class="recharge-form">
               <label for="tradecode">交易码</label>
@@ -305,7 +305,7 @@
               <label for="tradetime">交易完成时间</label>
               <input type="text" id="tradetime" name="tradetime" required>
             </div>
-            <button type="submit" form="recharge-form">充值完成</button>
+            <button type="submit" form="recharge-form">确认</button>
           </form>
         </div>
       </div>
