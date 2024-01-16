@@ -80,7 +80,7 @@
   td a {
     display: block;
     margin: 0 auto;
-    width: 50%;
+    width: 10%;
   }
 
   td a:first-child {
@@ -129,12 +129,6 @@
     background-color: rgb(35, 35, 168);
   }
 
-  table {
-    width: 100%;
-    /* 或者任何适合小屏幕的最大宽度 */
-    margin: 0 auto;
-    /* 如果需要，居中显示表格 */
-  }
 
   /* 可以给表格的单元格或者内容添加额外的样式以改善可读性 */
   table td,
@@ -143,11 +137,12 @@
     /* 减少填充 */
     font-size: 1em;
     /* 缩小字体 */
+    width: 100px;
   }
 
 
   table {
-    width: 20vw;
+    width: 50px;
     /* 表格宽度为视口宽度的80% */
   }
 
@@ -211,6 +206,17 @@
     /* 设置分隔线的颜色 */
     margin: 10px 0;
     /* 上下间距 */
+    width: 100%;
+  }
+  table th, table td {
+    width: 10%; /* 设置一个固定宽度 */
+    max-width: 10%; /* 设置一个最大宽度 */
+    min-width: 10%; /* 设置一个最小宽度 */
+    word-wrap: break-word; /* 允许单词内换行 */
+    overflow: hidden; /* 隐藏溢出的内容 */
+    text-overflow: ellipsis; /* 显示省略符号 */
+    white-space: nowrap; /* 文本不换行 */
+    font-size: 20px; /* 减小字体大小 */
   }
 
   [v-cloak] {
@@ -268,7 +274,7 @@
         </div>
       </div>
     </div>
-    <div class="table-data" style="width: 300px;">
+    <div class="table-data" style="width: 100%;">
       <div class="order">
         <div class="scroll-table">
           <table>

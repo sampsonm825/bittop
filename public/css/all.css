@@ -725,7 +725,7 @@ body {
 }
 
 #content main .table-data .order table {
-  width: 1200px;
+  width: 100%;
   border-collapse: collapse;
   overflow-x: scroll;
 }
@@ -738,6 +738,7 @@ body {
   text-align: center;
   width: 10px;
 }
+
 
 #content main .table-data .order table td {
   padding: 16px 0;
@@ -897,15 +898,15 @@ body {
   }
 
   #content main .table-data .head {
-    min-width: 420px;
+    min-width: 120px;
   }
 
   #content main .table-data .order table {
-    min-width: 420px;
+    min-width: 120px;
   }
 
   #content main .table-data .todo .todo-list {
-    min-width: 420px;
+    min-width: 120px;
   }
 }
 

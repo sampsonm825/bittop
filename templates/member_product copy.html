@@ -163,6 +163,16 @@
     /* 红色警告字体 */
     font-size: 12px;
   }
+  table th, table td {
+    width: 100px; /* 设置一个固定宽度 */
+    max-width: 100px; /* 设置一个最大宽度 */
+    min-width: 50px; /* 设置一个最小宽度 */
+    word-wrap: break-word; /* 允许单词内换行 */
+    overflow: hidden; /* 隐藏溢出的内容 */
+    text-overflow: ellipsis; /* 显示省略符号 */
+    white-space: nowrap; /* 文本不换行 */
+    font-size: 50px; /* 减小字体大小 */
+  }
 
   [v-cloak] {
     display: none !important;
