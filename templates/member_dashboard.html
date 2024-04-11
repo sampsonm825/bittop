@@ -583,6 +583,21 @@
     </form>
   </div>
 </div>
+<script>
+  var addCardBtn = document.getElementById('add-card-button');
+  addCardBtn.addEventListener('click', openAddCardModal);
+  addCardBtn.addEventListener('touchend', function(event) {
+    event.preventDefault(); // 防止触摸事件同时触发点击事件
+    openAddCardModal();
+  });
+
+  function openAddCardModal() {
+    var addCardModal = document.getElementById('add-card-modal');
+    addCardModal.style.display = 'block';
+  }
+</script>
+</body>
+</html>
 <div class="table-container">
 
   <body>
