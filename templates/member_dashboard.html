@@ -818,9 +818,12 @@ document.getElementById('recharge-form').addEventListener('submit', function (e)
   var closeBtns = document.getElementsByClassName('close'); // 可能有多个关闭按钮
 
   // 当用户点击新增收款卡按钮时打开模态窗口
-  addCardBtn.onclick = function () {
-    addCardModal.style.display = 'block';
-  }
+  addCardBtn.addEventListener('click', function() {
+        // 触发弹窗的代码
+        var addCardModal = document.getElementById('add-card-modal');
+        addCardModal.style.display = 'block';
+    });
+
 
   // 关闭模态窗口
   for (var i = 0; i < closeBtns.length; i++) {
