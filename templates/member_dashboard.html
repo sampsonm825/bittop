@@ -726,10 +726,14 @@ document.getElementById('recharge-form').addEventListener('submit', function (e)
     var modal = document.getElementById('edit-card-modal');
     modal.style.display = 'none';
   }
-
-  document.getElementById('add-card-button').addEventListener('click', function() {
-    this.style.backgroundColor = 'red'; // 将背景颜色改为红色
+  document.addEventListener('DOMContentLoaded', function() {
+    var addCardBtn = document.getElementById('add-card-button');
+    addCardBtn.addEventListener('touchend', function(event) {
+        event.preventDefault(); // 防止同时触发click事件
+        this.classList.add('button-clicked');
+    });
 });
+
   document.getElementById('add-card-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -747,7 +751,15 @@ document.getElementById('recharge-form').addEventListener('submit', function (e)
       .catch(error => console.error('Error:', error));
   });
 
-
+  document.addEventListener('DOMContentLoaded', function() {
+    // 获取新增收款卡按钮
+    var addCardBtn = document.getElementById('add-card-button');
+    // 为按钮添加点击事件监听器
+    addCardBtn.addEventListener('click', function() {
+        // 修改按钮样式
+        this.classList.add('button-clicked');
+    });
+});
   function copyLink() {
     // 获取文本元素
     var linkText = document.getElementById("invite-link");
