@@ -727,7 +727,9 @@ document.getElementById('recharge-form').addEventListener('submit', function (e)
     modal.style.display = 'none';
   }
 
-
+  document.getElementById('add-card-button').addEventListener('click', function() {
+    this.style.backgroundColor = 'red'; // 将背景颜色改为红色
+});
   document.getElementById('add-card-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
