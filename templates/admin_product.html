@@ -361,10 +361,12 @@
                   </div>
                 </td>
                 <td>
-                  <div v-if="is_modal" class="modal">
-                    <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail"
-                      @click="showModal(item.thumbnail)" />
-                  </div>
+                  <!-- <div v-if="is_modal" class="modal">
+                    <img v-if="item.thumbnail" :src="item.thumbnail" class="thumbnail" />
+
+                  </div> -->
+                  [[ item.image_filename ]]
+
                 </td>
                 <td>[[ item.is_buy ]]</td>
 
@@ -463,45 +465,41 @@
           alert('复制失败！');
         });
       },
-      previewImage(event, index) {
-        const file = event.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.$set(this.my_product_data[index], 'thumbnail', e.target.result);
-            this.uploadImage(file, this.my_product_data[index]._id);
-          };
-          reader.readAsDataURL(file);
-        }
+      showModal(thumbnailUrl) {
+        this.image_url = thumbnailUrl;
+        this.is_modal = true;
       },
-      uploadImage(event, id) {
+      uploadImage(event, orderId) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
           const formData = new FormData();
           formData.append('image', file);
-          formData.append('id', id);
+          formData.append('id', orderId);
+          console.log(this.product_data)
+
 
           fetch('/api/upload-image', {
             method: 'POST',
             body: formData
           })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('网络响应不是OK');
-              }
-              return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-              this.updateThumbnail(id, data.image_url);
+              if (data.status === 'success') {
+                const product = this.product_data.find(p => p._id === orderId);
+                if (product) {
+                  product.thumbnail = data.image_url; // 确保更新了thumbnail
+                  this.$forceUpdate(); // 强制Vue更新DOM
+                }
+                console.log('上传成功，服务器返回的图像URL:', data.image_url);
+                this.updateThumbnail(orderId, data.image_url);
+              } else {
+                console.error('上传失败:', data.message);
+              }
             })
             .catch(error => {
               console.error('上传错误:', error);
             });
         }
-      },
-      showModal(imageUrl) {
-        this.modal_image = imageUrl;
-        this.is_modal = true;
       },
       updateThumbnail(id, url) {
         const product = this.product_data.find(p => p._id === id);
@@ -509,8 +507,8 @@
           product.thumbnail = url;
           this.$forceUpdate();
         }
-      },
 
+      }
     },
     created() {
       this.product_data = JSON.parse('{{ product_data | tojson | safe }}');
@@ -518,6 +516,8 @@
 
       // 假设 Flask 正确地传递了 product_data
       this.product_data = JSON.parse('{{ product_data | tojson | safe }}');
+      this.updateThumbnail = this.updateThumbnail.bind(this);
+
 
     },
 

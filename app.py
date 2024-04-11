@@ -20,6 +20,7 @@ import base64
 import uuid
 from flask import Response
 from datetime import datetime
+import traceback  # 引入 traceback 模块
 
 
 
@@ -1847,6 +1848,16 @@ def is_member(user_id):
 def is_admin(user_id):
     # 实现检查用户是否为管理员的逻辑
     pass
+
+@app.route('/some-endpoint')
+def get_orders():
+    orders = list(dbs.member_usdt.find())
+    for order in orders:
+        order['_id'] = str(order['_id'])
+        # 假设图片URL存储在'image_url'字段中
+        image_url = order.get('image_url', '')
+        order['image_filename'] = os.path.basename(image_url) if image_url else 'No Image'
+    return jsonify(orders)
 @app.route('/admin_product', methods=['GET', 'POST'])
 def admin_product():
     if 'display_name' in session:
@@ -1936,8 +1947,8 @@ def upload_image():
         image = request.files['image']
         order_id = request.form['id']
 
-        if image and order_id:
-            upload_folder = '/path/to/upload/folder' # 此处应该是您的实际存储路径
+        if image and order_id and ObjectId.is_valid(order_id):
+            upload_folder = '/path/to/upload/folder'  # 替换为您的实际存储路径
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
 
@@ -1945,15 +1956,36 @@ def upload_image():
             path = os.path.join(upload_folder, filename)
             image.save(path)
 
-        # 更新数据库记录
-            image_url = url_for('static', filename=os.path.join('path/to/save/images', filename))
-            dbs.member_usdt.update_one({'_id': ObjectId(order_id)}, {'$set': {'image_url': image_url}})
+            # 更新数据库记录
+            image_url = url_for('static', filename=filename)
+            result = dbs.member_usdt.update_one({'_id': ObjectId(order_id)}, {'$set': {'image_url': image_url}})
+            
+            print(f"Image saved to: {path}")
+            print(f"Database update result: {result.raw_result}")
+
             return jsonify({'status': 'success', 'image_url': image_url})
 
         return jsonify({'status': 'error', 'message': 'Invalid data'})
     except Exception as e:
-        print(e)  # 打印异常信息，便于调试
-        return jsonify({'status': 'error', 'message': 'An error occurred'})
+        traceback.print_exc()  # 打印完整的堆栈跟踪
+        return jsonify({'status': 'error', 'message': str(e)})
+    
+
+    
+@app.route('/test-db-update', methods=['GET'])
+def test_db_update():
+    try:
+        # 假定的测试 ID 和更新内容
+        test_id = '1234567890abcdef'
+        test_update = {'$set': {'test_field': 'test_value'}}
+
+        if ObjectId.is_valid(test_id):
+            result = dbs.member_usdt.update_one({'_id': ObjectId(test_id)}, test_update)
+            return jsonify({'status': 'success', 'result': str(result.raw_result)})
+        else:
+            return jsonify({'status': 'error', 'message': 'Invalid ID'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 @app.route('/confirm_order/<order_id>', methods=['POST'])
 def confirm_order(order_id):
