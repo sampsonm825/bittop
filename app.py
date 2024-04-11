@@ -21,23 +21,10 @@ import uuid
 from flask import Response
 from datetime import datetime
 import traceback  # 引入 traceback 模块
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 
-scheduler = BlockingScheduler()
 
-# 使用pytz指定UTC时区
-scheduler = BlockingScheduler()
-utc_zone = pytz.timezone('Asia/Taipei')
-
-def job_function():
-    print("执行任务")
-
-# 使用add_job方法来安排任务
-scheduler.add_job(job_function, 'interval', id='do_job_1', max_instances=100, misfire_grace_time=60, minutes=60, timezone=utc_zone)
-
-scheduler.start()
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
